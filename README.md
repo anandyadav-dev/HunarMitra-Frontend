@@ -1,16 +1,68 @@
-# React + Vite
+# HunarMitra - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+HunarMitra is a platform connecting skilled workers with contractors. This repository contains the frontend application built with React and Vite.
 
-Currently, two official plugins are available:
+## 🚀 Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Follow these instructions to get a copy of the project up and running on your local machine for development and testing purposes.
 
-## React Compiler
+### Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Ensure you have Node.js installed on your machine. You can download it from [nodejs.org](https://nodejs.org/).
 
-## Expanding the ESLint configuration
+### Installation
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1.  **Clone the repository** (if you haven't already):
+    ```bash
+    git clone <repository-url>
+    cd HunarMitra-Frontend
+    ```
+
+2.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+### 💻 Development
+
+To start the development server with Hot Module Replacement (HMR):
+
+```bash
+npm run dev
+```
+
+The application will typically be available at `http://localhost:5173` (check the terminal output for the exact URL).
+
+### 🏗️ Build
+
+To build the application for production:
+
+```bash
+npm run build
+```
+
+The build artifacts will be stored in the `dist/` directory.
+
+### 🔍 Linting
+
+To run ESLint and check for code quality issues:
+
+```bash
+npm run lint
+```
+
+## 🛠️ Tech Stack
+
+*   **Framework:** React
+*   **Build Tool:** Vite
+*   **Styling:** Tailwind CSS (implied, ensure config exists if used), CSS
+*   **Icons:** Lucide React
+*   **Animations:** Framer Motion
+*   **Routing:** React Router DOM
+
+## 📂 Project Structure
+
+*   `src/` - Source code for the application.
+*   `public/` - Static assets.
+*   `vite.config.js` - Vite configuration.
+*   `package.json` - Project dependencies and scripts.
