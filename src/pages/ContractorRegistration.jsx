@@ -1,0 +1,184 @@
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Building2, User, Phone, MapPin, Mail, ShieldCheck, CheckSquare, Square, ArrowRight } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
+import { translations } from '../utils/translations';
+
+const ContractorRegistration = () => {
+    const { language } = useLanguage();
+    const t = translations[language];
+    const [formData, setFormData] = useState({
+        companyName: '',
+        contactPerson: '',
+        mobile: '',
+        email: '',
+        city: '',
+        agreed: false
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        alert('Contractor Registration Submitted!');
+    };
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.4 }}
+            style={{
+                minHeight: '100vh',
+                paddingTop: '100px',
+                paddingBottom: '4rem',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--color-bg-primary)'
+            }}
+        >
+            <div className="container" style={{ width: '100%', maxWidth: '600px' }}>
+                <div className="glass-card" style={{ padding: '2rem', borderTop: '4px solid var(--color-green)' }}>
+
+                    <div style={{ marginBottom: '2rem' }}>
+                        <h2 style={{ fontSize: '1.8rem', lineHeight: 1.2 }}>{t.contractorRegTitle}</h2>
+                        <p style={{ color: 'var(--color-green)' }}>{t.contractorRegSubtitle}</p>
+                    </div>
+
+                    <form onSubmit={handleSubmit}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+                            {/* Company Name */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.companyName}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Building2 size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Sharma Constructions"
+                                        value={formData.companyName}
+                                        onChange={e => setFormData({ ...formData, companyName: e.target.value })}
+                                        required
+                                        style={{
+                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Contact Person */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.contactPerson}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Your Name"
+                                        value={formData.contactPerson}
+                                        onChange={e => setFormData({ ...formData, contactPerson: e.target.value })}
+                                        required
+                                        style={{
+                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Mobile */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.mobileNumber}</label>
+                                <div style={{ display: 'flex', gap: '1rem' }}>
+                                    <span style={{
+                                        padding: '1rem', background: 'var(--color-bg-tertiary)',
+                                        borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)'
+                                    }}>+91</span>
+                                    <div style={{ position: 'relative', flex: 1 }}>
+                                        <Phone size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                        <input
+                                            type="tel"
+                                            placeholder="98765 43210"
+                                            value={formData.mobile}
+                                            onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+                                            required
+                                            style={{
+                                                width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* City */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.city}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <MapPin size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Project Location"
+                                        value={formData.city}
+                                        onChange={e => setFormData({ ...formData, city: e.target.value })}
+                                        required
+                                        style={{
+                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                        }}
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Workers Required */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '500' }}>{t.workersRequired}</label>
+                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                    {[t.electrician, t.plumber, t.mason, t.painter, t.carpenter].map(skill => (
+                                        <span
+                                            key={skill}
+                                            className="btn-outline"
+                                            style={{
+                                                padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', cursor: 'pointer',
+                                                background: 'var(--color-bg-tertiary)'
+                                            }}
+                                        >
+                                            {skill}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Terms */}
+                            <div
+                                onClick={() => setFormData(prev => ({ ...prev, agreed: !prev.agreed }))}
+                                style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', cursor: 'pointer' }}
+                            >
+                                {formData.agreed ? <CheckSquare color="var(--color-green)" /> : <Square color="var(--color-text-muted)" />}
+                                <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+                                    {t.agreeTerms}
+                                </span>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary-green"
+                                style={{ width: '100%', padding: '1rem', marginTop: '1rem', color: 'white' }}
+                                disabled={!formData.agreed}
+                            >
+                                <ShieldCheck size={20} /> {t.registerSecurely}
+                            </button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
+
+export default ContractorRegistration;

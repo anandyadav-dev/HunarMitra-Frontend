@@ -1,0 +1,209 @@
+/* ============================================
+   HUNARMITRA DESIGN SYSTEM
+   Modern Bilingual Platform (Light & Dark Mode)
+   ============================================ */
+
+:root {
+  /* Default to Light Mode Variables */
+  --color-bg-primary: #FFFFFF;
+  --color-bg-secondary: #F3F4F6;
+  --color-bg-tertiary: #E5E7EB;
+
+  --color-text-primary: #1F2937;
+  --color-text-secondary: #4B5563;
+  --color-text-muted: #9CA3AF;
+
+  --color-orange: #FF6B2C;
+  --color-orange-light: #FF8F60;
+  --color-orange-dark: #E65100;
+
+  --color-green: #1E8449;
+  --color-green-light: #2ECC71;
+  --color-green-dark: #145A32;
+
+  --color-blue: #3B82F6;
+
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(0, 0, 0, 0.05);
+  --glass-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-glow-orange: 0 0 15px rgba(255, 107, 44, 0.2);
+  --shadow-glow-green: 0 0 15px rgba(30, 132, 73, 0.2);
+
+  /* Shared Spacing & Typography */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+  --space-3xl: 6rem;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  /* 20px */
+
+  --font-primary: 'Inter', system-ui, sans-serif;
+  --transition-base: 250ms ease;
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] {
+  --color-bg-primary: #0F1115;
+  --color-bg-secondary: #181B21;
+  --color-bg-tertiary: #1F2329;
+
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B4BCD0;
+  --color-text-muted: #6B7280;
+
+  --glass-bg: rgba(24, 27, 33, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+  /* More vibrant glows in dark mode */
+  --shadow-glow-orange: 0 0 25px rgba(255, 107, 44, 0.4);
+  --shadow-glow-green: 0 0 25px rgba(30, 132, 73, 0.4);
+}
+
+/* Reset & Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-primary);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  transition: background-color var(--transition-base), color var(--transition-base);
+  line-height: 1.6;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+/* Utility Classes */
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
+.section {
+  padding: var(--space-3xl) 0;
+}
+
+.text-gradient-orange {
+  background: linear-gradient(135deg, var(--color-orange) 0%, var(--color-orange-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-green {
+  background: linear-gradient(135deg, var(--color-green) 0%, var(--color-green-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glass Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-lg);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-base);
+  border: none;
+  font-size: 1rem;
+}
+
+.btn-primary-orange {
+  background: linear-gradient(135deg, var(--color-orange) 0%, var(--color-orange-dark) 100%);
+  color: white;
+  box-shadow: var(--shadow-glow-orange);
+}
+
+.btn-primary-orange:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(255, 107, 44, 0.4);
+}
+
+.btn-primary-green {
+  background: linear-gradient(135deg, var(--color-green) 0%, var(--color-green-dark) 100%);
+  color: white;
+  /* Green text on dark background looked odd, standardizing white text for primary buttons */
+  box-shadow: var(--shadow-glow-green);
+}
+
+.btn-primary-green:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(30, 132, 73, 0.4);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 2px solid var(--color-text-secondary);
+  color: var(--color-text-primary);
+}
+
+.btn-outline:hover {
+  border-color: var(--color-text-primary);
+  background: var(--color-bg-secondary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  :root {
+    --space-3xl: 3rem;
+    --space-2xl: 2rem;
+    --radius-xl: 1rem;
+  }
+}
