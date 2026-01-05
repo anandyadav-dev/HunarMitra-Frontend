@@ -17,12 +17,7 @@ const RegistrationHighlight = () => {
             }}></div>
 
             <div className="container">
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(350px, 1fr))',
-                    gap: '3rem',
-                    alignItems: 'stretch'
-                }}>
+                <div className="registration-grid">
                     {/* Worker Card */}
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
@@ -30,15 +25,7 @@ const RegistrationHighlight = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                         whileHover={{ y: -10 }}
-                        className="glass-card"
-                        style={{
-                            borderTop: '4px solid var(--color-orange)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            padding: '3rem 2.5rem',
-                            height: '100%',
-                            cursor: 'default'
-                        }}
+                        className="glass-card role-card"
                     >
                         <div style={{
                             background: 'rgba(255, 140, 66, 0.1)',
@@ -82,15 +69,7 @@ const RegistrationHighlight = () => {
                         viewport={{ once: true }}
                         transition={{ duration: 0.6, delay: 0.2 }}
                         whileHover={{ y: -10 }}
-                        className="glass-card"
-                        style={{
-                            borderTop: '4px solid var(--color-green)',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            padding: '3rem 2.5rem',
-                            height: '100%',
-                            cursor: 'default'
-                        }}
+                        className="glass-card role-card contractor"
                     >
                         <div style={{
                             background: 'rgba(30, 132, 73, 0.1)',
