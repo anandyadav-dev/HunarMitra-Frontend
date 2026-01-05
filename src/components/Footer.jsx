@@ -89,8 +89,8 @@ const Footer = () => {
                             </li>
                             <li style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', color: '#9CA3AF', fontSize: '0.9rem' }}>
                                 <span>📞</span>
-                                <a href="tel:+919876543210" style={{ color: 'inherit', textDecoration: 'none' }}>
-                                    +91 98765 43210
+                                <a href="tel:+919984694243" style={{ color: 'inherit', textDecoration: 'none' }}>
+                                    +91 99846 94243
                                 </a>
                             </li>
                             <li style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', color: '#9CA3AF', fontSize: '0.9rem' }}>
