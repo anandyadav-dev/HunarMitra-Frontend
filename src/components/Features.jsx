@@ -53,7 +53,7 @@ const Features = () => {
     };
 
     return (
-        <section className="section">
+        <section className="section" style={{ background: 'var(--color-bg-primary)', position: 'relative', zIndex: 10 }}>
             <div className="container">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}

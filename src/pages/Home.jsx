@@ -3,7 +3,6 @@ import { motion } from 'framer-motion';
 import Hero from '../components/Hero';
 import Features from '../components/Features';
 import HowItWorks from '../components/HowItWorks';
-import RegistrationHighlight from '../components/RegistrationHighlight';
 import Team from '../components/Team';
 
 const Home = () => {
@@ -17,7 +16,6 @@ const Home = () => {
             <Hero />
             <HowItWorks />
             <Features />
-            <RegistrationHighlight />
             <Team />
         </motion.div>
     );

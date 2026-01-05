@@ -13,6 +13,20 @@ export const translations = {
         empowering: "🚀 Empowering India's Workforce",
         heroTitle: "Connecting Skilled Workers with Trusted Contractors",
         heroSubtitle: "HunarMitra helps you find work or hire skilled labor instantly. Verification, secure payments, and trusted connections all in one place.",
+
+        // Hero Slides
+        hero_slide1_title: "Connect with Skilled Labor",
+        hero_slide1_subtitle: "India's efficient marketplace for construction talent.",
+        hero_slide1_desc: "Stop waiting at labor chowks. Find verified carpenters, masons, and electricians instantly. We bridge the gap between skill and opportunity.",
+
+        hero_slide2_title: "Verified & Trusted",
+        hero_slide2_subtitle: "Safety and reliability you can count on.",
+        hero_slide2_desc: "Every worker profile is verified with KYC. Contractors are vetted. Build with confidence knowing you have a trustworthy team.",
+
+        hero_slide3_title: "Secure Payments & Growth",
+        hero_slide3_subtitle: "Digital payments and financial security for all.",
+        hero_slide3_desc: "Transparent transactions. Workers get paid on time, contractors track expenses easily. Focused on growing India's infrastructure, together.",
+
         registerWorker: "Register as Worker",
         registerContractor: "Register as Contractor",
         statWorkers: "Workers",
@@ -80,6 +94,20 @@ export const translations = {
         empowering: "🚀 भारत के कार्यबल को सशक्त बनाना",
         heroTitle: "कुशल कारीगरों को भरोसेमंद ठेकेदारों से जोड़ना",
         heroSubtitle: "हुनरमित्र आपको काम खोजने या तुरंत कुशल श्रमिक काम पर रखने में मदद करता है। सत्यापन, सुरक्षित भुगतान और भरोसेमंद कनेक्शन सब एक ही जगह।",
+
+        // Hero Slides
+        hero_slide1_title: "कुशल श्रमिकों से जुड़ें",
+        hero_slide1_subtitle: "निर्माण प्रतिभा के लिए भारत का कुशल बाज़ार।",
+        hero_slide1_desc: "लेबर चौक पर इंतज़ार करना बंद करें। सत्यापित बढ़ई, राजमिस्त्री और इलेक्ट्रीशियन तुरंत खोजें। हम कौशल और अवसर के बीच की खाई को पाटते हैं।",
+
+        hero_slide2_title: "सत्यापित और विश्वसनीय",
+        hero_slide2_subtitle: "सुरक्षा और विश्वसनीयता जिस पर आप भरोसा कर सकते हैं।",
+        hero_slide2_desc: "प्रत्येक वर्कर प्रोफाइल को KYC के साथ सत्यापित किया जाता है। ठेकेदारों की जांच की जाती है। आत्मविश्वास के साथ निर्माण करें यह जानते हुए कि आपके पास एक भरोसेमंद टीम है।",
+
+        hero_slide3_title: "सुरक्षित भुगतान और विकास",
+        hero_slide3_subtitle: "सभी के लिए डिजिटल भुगतान और वित्तीय सुरक्षा।",
+        hero_slide3_desc: "पारदर्शी लेनदेन। श्रमिकों को समय पर भुगतान मिलता है, ठेकेदार आसानी से खर्चों को ट्रैक करते हैं। भारत के बुनियादी ढांचे को बढ़ाने पर केंद्रित, एक साथ।",
+
         registerWorker: "वर्कर के रूप में रजिस्टर करें",
         registerContractor: "ठेकेदार के रूप में रजिस्टर करें",
         statWorkers: "वर्कर्स",

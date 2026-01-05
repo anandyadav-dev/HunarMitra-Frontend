@@ -8,7 +8,7 @@ const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { language, toggleLanguage } = useLanguage();
+  const { language, toggleLanguage, t } = useLanguage();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,10 +20,10 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { name: 'Home', path: '/' },
-    { name: 'Kiosk', path: '#' },
-    { name: 'FAQ', path: '#' },
-    { name: 'Contact', path: '#' },
+    { name: t('home'), path: '/' },
+    { name: t('kiosk'), path: '#' },
+    { name: t('faq'), path: '#' },
+    { name: t('contact'), path: '#' },
   ];
 
   return (
@@ -126,7 +126,7 @@ const Header = () => {
               className="btn btn-primary-orange"
               style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem' }}
             >
-              Register Now
+              {t('registerNow')}
             </button>
           </div>
         </div>
@@ -185,7 +185,7 @@ const Header = () => {
                   background: 'transparent', border: 'none', color: 'var(--color-text-primary)'
                 }}
               >
-                <Languages size={20} /> {language === 'en' ? 'Switch to Hindi' : 'Switch to English'}
+                <Languages size={20} /> {t('switchLanguage')}
               </button>
 
               <button
@@ -195,7 +195,7 @@ const Header = () => {
                   background: 'transparent', border: 'none', color: 'var(--color-text-primary)'
                 }}
               >
-                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />} Theme
+                {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />} {t('switchTheme')}
               </button>
             </div>
 
@@ -207,7 +207,7 @@ const Header = () => {
               }}
               style={{ width: '100%', maxWidth: '200px' }}
             >
-              Register Now
+              {t('registerNow')}
             </button>
           </nav>
         </div>
