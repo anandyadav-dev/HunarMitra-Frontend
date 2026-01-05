@@ -28,11 +28,16 @@ const AnimatedRoutes = () => {
   );
 };
 
+import ScrollToTop from './components/ScrollToTop';
+
+// ... (imports)
+
 function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
         <Router>
+          <ScrollToTop />
           <div className="app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
             <Header />
             <main style={{ flex: 1 }}>

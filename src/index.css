@@ -396,7 +396,7 @@ ul {
   border-radius: 1rem;
   transition: transform 0.4s ease;
   background: white;
-  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2);
+  /* box-shadow: 0 0 30px 10px rgba(255, 107, 44, 0.6); */
   /* Blue Glow */
 }
 

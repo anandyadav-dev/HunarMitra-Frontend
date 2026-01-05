@@ -20,10 +20,10 @@ const ContractorRegistration = () => {
         agreed: false
     });
 
-    // Scroll to top on mount
+    // Scroll to top on step change
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+    }, [step]);
 
     const handleOtpChange = (index, value) => {
         if (isNaN(value)) return;
