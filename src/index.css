@@ -102,13 +102,16 @@ ul {
 /* Utility Classes */
 .container {
   max-width: 1280px;
-  margin: 0 auto;
+  margin: 25px auto;
   padding: 0 var(--space-lg);
 }
 
+
 .section {
-  padding: var(--space-3xl) 0;
+  padding: 5rem 0;
+  position: relative;
 }
+
 
 .text-gradient-orange {
   background: linear-gradient(135deg, var(--color-orange) 0%, var(--color-orange-light) 100%);
@@ -126,6 +129,7 @@ ul {
 
 /* Glass Card */
 .glass-card {
+  padding-top: 45px;
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -200,10 +204,294 @@ ul {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  :root {
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+  }
+
+  .container {
+    padding: 0 var(--space-md);
+  }
+}
+
 @media (max-width: 768px) {
   :root {
+    --space-md: 1rem;
     --space-3xl: 3rem;
     --space-2xl: 2rem;
     --radius-xl: 1rem;
+  }
+
+  .section {
+    padding: 3.5rem 0;
+  }
+
+  .glass-bar {
+    padding: 1.5rem;
+    flex-direction: column;
+    gap: 1.5rem !important;
+    border-radius: var(--radius-xl);
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  /* Adjust typography for mobile */
+  h1,
+  .text-display {
+    font-size: 2.5rem !important;
+  }
+
+  h2 {
+    font-size: 2rem !important;
+  }
+
+  p {
+    font-size: 1rem !important;
+  }
+}
+
+/* --- New Premium Utilities --- */
+
+/* Smooth Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-secondary);
+}
+
+/* Enhanced Glass Card with Hover Glow */
+.glass-card {
+  padding-top: 45px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--glass-shadow);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    border-color 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent);
+  transition: 0.5s;
+  pointer-events: none;
+}
+
+.glass-card:hover::before {
+  left: 100%;
+  transition: 0.5s;
+}
+
+.glass-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Premium Text Styles */
+.text-display {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.text-gradient-orange {
+  background: linear-gradient(135deg, #FF6B2C 0%, #FF9F43 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(255, 107, 44, 0.2));
+}
+
+.text-gradient-green {
+  background: linear-gradient(135deg, #2ECC71 0%, #26A65B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(46, 204, 113, 0.2));
+}
+
+/* Button Glows */
+.btn-primary-orange {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-primary-orange::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #FF9F43 0%, #FF6B2C 100%);
+  opacity: 0;
+  z-index: -1;
+  transition: opacity 0.3s ease;
+}
+
+.btn-primary-orange:hover::after {
+  opacity: 1;
+}
+
+/* Floating Animation */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 4s ease-in-out 2s infinite;
+}
+
+/* Team Section Styles */
+.team-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1rem;
+  transition: transform 0.4s ease;
+  background: white;
+  box-shadow: var(--shadow-md);
+}
+
+.team-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(100%);
+  transition: filter 0.5s ease, transform 0.7s ease;
+  display: block;
+}
+
+.team-card:hover img {
+  filter: grayscale(0%);
+  transform: scale(1.05);
+}
+
+.team-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.6) 50%, transparent 100%);
+  color: white;
+  transform: translateY(10px);
+  opacity: 0;
+  transition: all 0.4s ease;
+}
+
+.team-card:hover .team-info {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.team-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--color-orange);
+  box-shadow: 0 0 30px 10px rgba(255, 107, 44, 0.6);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  z-index: 2;
+}
+
+.team-card:hover::after {
+  opacity: 1;
+}
+
+/* Hero Aesthetics Refinements */
+.text-glow {
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.glass-bar {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 100px;
+  padding: 1.5rem 3rem;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Shining Button Effect */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-shine::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
+  transform: skewX(-25deg);
+  transition: 0.5s;
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% {
+    left: -100%;
+  }
+
+  20% {
+    left: 200%;
+  }
+
+  100% {
+    left: 200%;
   }
 }

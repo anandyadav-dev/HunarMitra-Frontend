@@ -1,15 +1,32 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 
-const StepCard = ({ number, title, description, icon }) => (
-    <div className="glass-card" style={{ position: 'relative', overflow: 'hidden' }}>
+const StepCard = ({ number, title, description, icon, delay }) => (
+    <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay }}
+        className="glass-card"
+        style={{
+            position: 'relative',
+            overflow: 'hidden',
+            padding: '2.5rem 2rem',
+            height: '100%',
+            display: 'flex',
+            flexDirection: 'column',
+            border: '1px solid rgba(255, 107, 44, 0.1)'
+        }}>
         <div style={{
             position: 'absolute',
-            top: '-20px',
-            right: '-20px',
+            top: '-15px',
+            right: '-10px',
             fontSize: '8rem',
-            fontWeight: 'bold',
+            fontWeight: '900',
             color: 'rgba(255,255,255,0.03)',
-            zIndex: 0
+            zIndex: 0,
+            lineHeight: 1,
+            pointerEvents: 'none'
         }}>
             {number}
         </div>
@@ -17,21 +34,22 @@ const StepCard = ({ number, title, description, icon }) => (
             width: '60px',
             height: '60px',
             borderRadius: '16px',
-            background: 'rgba(59, 130, 246, 0.1)',
-            color: '#3B82F6',
+            background: 'rgba(255, 107, 44, 0.1)',
+            color: 'var(--color-orange)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             fontSize: '2rem',
             marginBottom: '1.5rem',
             position: 'relative',
-            zIndex: 1
+            zIndex: 1,
+            boxShadow: '0 4px 15px rgba(255, 107, 44, 0.2)'
         }}>
             {icon}
         </div>
-        <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', position: 'relative', zIndex: 1 }}>{title}</h3>
-        <p style={{ fontSize: '0.95rem', position: 'relative', zIndex: 1 }}>{description}</p>
-    </div>
+        <h3 style={{ fontSize: '1.5rem', marginBottom: '1rem', position: 'relative', zIndex: 1, fontWeight: '700' }}>{title}</h3>
+        <p style={{ fontSize: '1rem', lineHeight: '1.6', position: 'relative', zIndex: 1, color: 'var(--color-text-secondary)' }}>{description}</p>
+    </motion.div>
 );
 
 const HowItWorks = () => {
@@ -57,12 +75,36 @@ const HowItWorks = () => {
     ];
 
     return (
-        <section id="how-it-works" className="section" style={{ background: 'var(--color-bg-secondary)' }}>
+        <section id="how-it-works" className="section" style={{ position: 'relative' }}>
+            {/* Background glow for ambience */}
+            <div style={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: '600px',
+                height: '600px',
+                background: 'radial-gradient(circle, rgba(255, 107, 44, 0.05) 0%, transparent 70%)',
+                zIndex: -1,
+                pointerEvents: 'none'
+            }} />
+
             <div className="container">
-                <div className="text-center" style={{ marginBottom: '4rem' }}>
-                    <h2 style={{ marginBottom: '1rem' }}>How It Works</h2>
-                    <p style={{ maxWidth: '600px', margin: '0 auto' }}>Simple steps to get started with India's most trusted labor platform.</p>
-                </div>
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="text-center"
+                    style={{ marginBottom: '4rem' }}
+                >
+                    <h2 className="text-display" style={{ marginBottom: '1rem', fontSize: '2.5rem' }}>
+                        How It <span className="text-gradient-orange">Works</span>
+                    </h2>
+                    <p style={{ margin: '0 auto', fontSize: '1.2rem', color: 'var(--color-text-secondary)' }}>
+                        Simple steps to get started with India's most trusted labor platform.
+                    </p>
+                </motion.div>
 
                 <div style={{
                     display: 'grid',
@@ -71,7 +113,7 @@ const HowItWorks = () => {
                     position: 'relative'
                 }}>
                     {steps.map((step, index) => (
-                        <StepCard key={index} {...step} />
+                        <StepCard key={index} {...step} delay={index * 0.2} />
                     ))}
                 </div>
             </div>
