@@ -3,10 +3,14 @@ import { motion } from 'framer-motion';
 import { Building2, User, Phone, MapPin, Mail, ShieldCheck, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
+import RegistrationSuccess from '../components/RegistrationSuccess';
 
 const ContractorRegistration = () => {
     const { language } = useLanguage();
     const t = translations[language];
+    const [step, setStep] = useState(1); // 1: Form, 2: OTP, 3: Success
+    const [otp, setOtp] = useState(['', '', '', '']);
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         companyName: '',
         contactPerson: '',
@@ -16,9 +20,36 @@ const ContractorRegistration = () => {
         agreed: false
     });
 
+    const handleOtpChange = (index, value) => {
+        if (isNaN(value)) return;
+
+        const newOtp = [...otp];
+        newOtp[index] = value;
+        setOtp(newOtp);
+
+        // Auto focus next input
+        if (value && index < 3) {
+            const nextInput = document.getElementById(`otp-${index + 1}`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        alert('Contractor Registration Submitted!');
+        setError('');
+
+        if (step === 1) {
+            // Simulate OTP sending
+            setStep(2);
+        } else if (step === 2) {
+            // Verify OTP
+            const enteredOtp = otp.join('');
+            if (enteredOtp === '1234') {
+                setStep(3); // Success Step
+            } else {
+                setError(t.invalidOtp);
+            }
+        }
     };
 
     return (
@@ -46,63 +77,19 @@ const ContractorRegistration = () => {
                     </div>
 
                     <form onSubmit={handleSubmit}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                        {step === 1 ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-                            {/* Company Name */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.companyName}</label>
-                                <div style={{ position: 'relative' }}>
-                                    <Building2 size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                    <input
-                                        type="text"
-                                        placeholder="e.g. Sharma Constructions"
-                                        value={formData.companyName}
-                                        onChange={e => setFormData({ ...formData, companyName: e.target.value })}
-                                        required
-                                        style={{
-                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
-                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Contact Person */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.contactPerson}</label>
-                                <div style={{ position: 'relative' }}>
-                                    <User size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                    <input
-                                        type="text"
-                                        placeholder="Your Name"
-                                        value={formData.contactPerson}
-                                        onChange={e => setFormData({ ...formData, contactPerson: e.target.value })}
-                                        required
-                                        style={{
-                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
-                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Mobile */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.mobileNumber}</label>
-                                <div style={{ display: 'flex', gap: '1rem' }}>
-                                    <span style={{
-                                        padding: '1rem', background: 'var(--color-bg-tertiary)',
-                                        borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)'
-                                    }}>+91</span>
-                                    <div style={{ position: 'relative', flex: 1 }}>
-                                        <Phone size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                {/* Company Name */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.companyName}</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <Building2 size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
                                         <input
-                                            type="tel"
-                                            placeholder="99846 94243"
-                                            value={formData.mobile}
-                                            onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+                                            type="text"
+                                            placeholder="e.g. Sharma Constructions"
+                                            value={formData.companyName}
+                                            onChange={e => setFormData({ ...formData, companyName: e.target.value })}
                                             required
                                             style={{
                                                 width: '100%', padding: '1rem 1rem 1rem 3rem',
@@ -112,68 +99,162 @@ const ContractorRegistration = () => {
                                         />
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* City */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.city}</label>
-                                <div style={{ position: 'relative' }}>
-                                    <MapPin size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                    <input
-                                        type="text"
-                                        placeholder="Project Location"
-                                        value={formData.city}
-                                        onChange={e => setFormData({ ...formData, city: e.target.value })}
-                                        required
-                                        style={{
-                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
-                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
-                                        }}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* Workers Required */}
-                            <div>
-                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '500' }}>{t.workersRequired}</label>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                    {[t.electrician, t.plumber, t.mason, t.painter, t.carpenter].map(skill => (
-                                        <span
-                                            key={skill}
-                                            className="btn-outline"
+                                {/* Contact Person */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.contactPerson}</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <User size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                        <input
+                                            type="text"
+                                            placeholder="Your Name"
+                                            value={formData.contactPerson}
+                                            onChange={e => setFormData({ ...formData, contactPerson: e.target.value })}
+                                            required
                                             style={{
-                                                padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', cursor: 'pointer',
-                                                background: 'var(--color-bg-tertiary)'
+                                                width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                             }}
-                                        >
-                                            {skill}
-                                        </span>
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Mobile */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.mobileNumber}</label>
+                                    <div style={{ display: 'flex', gap: '1rem' }}>
+                                        <span style={{
+                                            padding: '1rem', background: 'var(--color-bg-tertiary)',
+                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)'
+                                        }}>+91</span>
+                                        <div style={{ position: 'relative', flex: 1 }}>
+                                            <Phone size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                            <input
+                                                type="tel"
+                                                placeholder="99846 94243"
+                                                value={formData.mobile}
+                                                onChange={e => setFormData({ ...formData, mobile: e.target.value })}
+                                                required
+                                                style={{
+                                                    width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                                    borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                    background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* City */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.city}</label>
+                                    <div style={{ position: 'relative' }}>
+                                        <MapPin size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                        <input
+                                            type="text"
+                                            placeholder="Project Location"
+                                            value={formData.city}
+                                            onChange={e => setFormData({ ...formData, city: e.target.value })}
+                                            required
+                                            style={{
+                                                width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Workers Required */}
+                                <div>
+                                    <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '500' }}>{t.workersRequired}</label>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                        {[t.electrician, t.plumber, t.mason, t.painter, t.carpenter].map(skill => (
+                                            <span
+                                                key={skill}
+                                                className="btn-outline"
+                                                style={{
+                                                    padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', cursor: 'pointer',
+                                                    background: 'var(--color-bg-tertiary)'
+                                                }}
+                                            >
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Terms */}
+                                <div
+                                    onClick={() => setFormData(prev => ({ ...prev, agreed: !prev.agreed }))}
+                                    style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', cursor: 'pointer' }}
+                                >
+                                    {formData.agreed ? <CheckSquare color="var(--color-green)" /> : <Square color="var(--color-text-muted)" />}
+                                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+                                        {t.agreeTerms}
+                                    </span>
+                                </div>
+
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary-green"
+                                    style={{ width: '100%', padding: '1rem', marginTop: '1rem', color: 'white' }}
+                                    disabled={!formData.agreed}
+                                >
+                                    {t.sendOtp} <ArrowRight size={20} />
+                                </button>
+                            </div>
+                        ) : step === 2 ? (
+                            <div className="animate-fade-in" style={{ textAlign: 'center', padding: '2rem 0' }}>
+                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📱</div>
+                                <h3 style={{ marginBottom: '1rem' }}>{t.enterOtp}</h3>
+                                <p style={{ marginBottom: '2rem', color: 'var(--color-text-secondary)' }}>
+                                    {t.otpSentTo} {formData.mobile}
+                                </p>
+
+                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '2rem' }}>
+                                    {otp.map((digit, i) => (
+                                        <input
+                                            key={i}
+                                            id={`otp-${i}`}
+                                            type="text"
+                                            maxLength="1"
+                                            value={digit}
+                                            onChange={(e) => handleOtpChange(i, e.target.value)}
+                                            style={{
+                                                width: '50px', height: '50px', textAlign: 'center', fontSize: '1.5rem',
+                                                borderRadius: '12px', border: error ? '1px solid red' : '1px solid var(--glass-border)',
+                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                            }}
+                                        />
                                     ))}
                                 </div>
+
+                                {error && <p style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</p>}
+
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary-green"
+                                    style={{ width: '100%', marginBottom: '1rem', color: 'white' }}
+                                >
+                                    {t.verifyComplete}
+                                </button>
+
+                                <p
+                                    onClick={() => {
+                                        setStep(1);
+                                        setOtp(['', '', '', '']);
+                                        setError('');
+                                    }}
+                                    style={{ cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}
+                                >
+                                    {t.changeNumber}
+                                </p>
                             </div>
-
-                            {/* Terms */}
-                            <div
-                                onClick={() => setFormData(prev => ({ ...prev, agreed: !prev.agreed }))}
-                                style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', cursor: 'pointer' }}
-                            >
-                                {formData.agreed ? <CheckSquare color="var(--color-green)" /> : <Square color="var(--color-text-muted)" />}
-                                <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
-                                    {t.agreeTerms}
-                                </span>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="btn btn-primary-green"
-                                style={{ width: '100%', padding: '1rem', marginTop: '1rem', color: 'white' }}
-                                disabled={!formData.agreed}
-                            >
-                                <ShieldCheck size={20} /> {t.registerSecurely}
-                            </button>
-
-                        </div>
+                        ) : (
+                            <RegistrationSuccess />
+                        )}
                     </form>
                 </div>
             </div>

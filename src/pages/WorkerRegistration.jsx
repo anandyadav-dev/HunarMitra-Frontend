@@ -3,11 +3,14 @@ import { motion } from 'framer-motion';
 import { Volume2, User, Phone, MapPin, Briefcase, ChevronDown, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
+import RegistrationSuccess from '../components/RegistrationSuccess';
 
 const WorkerRegistration = () => {
     const { language } = useLanguage();
     const t = translations[language];
-    const [step, setStep] = useState(1); // 1: Form, 2: OTP
+    const [step, setStep] = useState(1); // 1: Form, 2: OTP, 3: Success
+    const [otp, setOtp] = useState(['', '', '', '']);
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
         name: '',
         mobile: '',
@@ -47,15 +50,35 @@ const WorkerRegistration = () => {
         window.speechSynthesis.speak(utterance);
     };
 
+    const handleOtpChange = (index, value) => {
+        if (isNaN(value)) return;
+
+        const newOtp = [...otp];
+        newOtp[index] = value;
+        setOtp(newOtp);
+
+        // Auto focus next input
+        if (value && index < 3) {
+            const nextInput = document.getElementById(`otp-${index + 1}`);
+            if (nextInput) nextInput.focus();
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
+        setError('');
+
         if (step === 1) {
             // Simulate OTP sending
             setStep(2);
-        } else {
-            // Final submission logic
-            console.log('Registered:', formData);
-            alert('Registration Successful! Welcome to HunarMitra.');
+        } else if (step === 2) {
+            // Verify OTP
+            const enteredOtp = otp.join('');
+            if (enteredOtp === '1234') {
+                setStep(3); // Success Step
+            } else {
+                setError(t.invalidOtp);
+            }
         }
     };
 
@@ -225,7 +248,7 @@ const WorkerRegistration = () => {
                                 </button>
 
                             </div>
-                        ) : (
+                        ) : step === 2 ? (
                             <div className="animate-fade-in" style={{ textAlign: 'center', padding: '2rem 0' }}>
                                 <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📱</div>
                                 <h3 style={{ marginBottom: '1rem' }}>{t.enterOtp}</h3>
@@ -234,19 +257,24 @@ const WorkerRegistration = () => {
                                 </p>
 
                                 <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '2rem' }}>
-                                    {[1, 2, 3, 4].map(i => (
+                                    {otp.map((digit, i) => (
                                         <input
                                             key={i}
+                                            id={`otp-${i}`}
                                             type="text"
                                             maxLength="1"
+                                            value={digit}
+                                            onChange={(e) => handleOtpChange(i, e.target.value)}
                                             style={{
                                                 width: '50px', height: '50px', textAlign: 'center', fontSize: '1.5rem',
-                                                borderRadius: '12px', border: '1px solid var(--glass-border)',
+                                                borderRadius: '12px', border: error ? '1px solid red' : '1px solid var(--glass-border)',
                                                 background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                             }}
                                         />
                                     ))}
                                 </div>
+
+                                {error && <p style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</p>}
 
                                 <button
                                     type="submit"
@@ -257,12 +285,18 @@ const WorkerRegistration = () => {
                                 </button>
 
                                 <p
-                                    onClick={() => setStep(1)}
+                                    onClick={() => {
+                                        setStep(1);
+                                        setOtp(['', '', '', '']);
+                                        setError('');
+                                    }}
                                     style={{ cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}
                                 >
                                     {t.changeNumber}
                                 </p>
                             </div>
+                        ) : (
+                            <RegistrationSuccess />
                         )}
                     </form>
                 </div>
