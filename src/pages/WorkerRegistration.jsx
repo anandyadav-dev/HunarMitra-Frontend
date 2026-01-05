@@ -22,10 +22,10 @@ const WorkerRegistration = () => {
         agreed: false
     });
 
-    // Scroll to top on mount
+    // Scroll to top on step change
     useEffect(() => {
         window.scrollTo(0, 0);
-    }, []);
+    }, [step]);
 
     const skillsList = [
         { id: 'electrician', label: t.electrician, icon: '⚡' },
