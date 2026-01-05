@@ -78,7 +78,12 @@ export const translations = {
         companyName: "Company / Business Name",
         contactPerson: "Contact Person Name",
         workersRequired: "Workers Required",
-        registerSecurely: "Register Securely"
+        registerSecurely: "Register Securely",
+        // Success & Error
+        registrationSuccess: "Registration Successful!",
+        registrationSuccessSubtitle: "Welcome to HunarMitra",
+        goHome: "Go to Home",
+        invalidOtp: "Invalid OTP. Please try again."
     },
     hi: {
         // Header
@@ -159,6 +164,11 @@ export const translations = {
         companyName: "कंपनी / व्यवसाय का नाम",
         contactPerson: "संपर्क व्यक्ति का नाम",
         workersRequired: "आवश्यक वर्कर्स",
-        registerSecurely: "सुरक्षित रूप से रजिस्टर करें"
+        registerSecurely: "सुरक्षित रूप से रजिस्टर करें",
+        // Success & Error
+        registrationSuccess: "पंजीकरण सफल!",
+        registrationSuccessSubtitle: "हुनरमित्र में आपका स्वागत है",
+        goHome: "होम पर जाएं",
+        invalidOtp: "अमान्य OTP। कृपया पुन: प्रयास करें।"
     }
 };
