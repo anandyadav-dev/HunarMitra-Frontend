@@ -111,9 +111,7 @@ const TextSection = ({ section, setIndex, index }) => {
                 <h2 className="text-display" style={{
                     fontSize: 'clamp(2.5rem, 5vw, 4rem)',
                     marginBottom: '1.5rem',
-                    background: 'linear-gradient(to right, #fff, #ccc)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent'
+                    color: 'var(--color-text-primary)'
                 }}>
                     {section.title}
                 </h2>

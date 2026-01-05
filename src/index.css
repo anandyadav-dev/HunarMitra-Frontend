@@ -13,6 +13,8 @@
   --color-text-secondary: #4B5563;
   --color-text-muted: #9CA3AF;
 
+  --text-gradient-primary: linear-gradient(to right, #1F2937, #4B5563);
+
   --color-orange: #FF6B2C;
   --color-orange-light: #FF8F60;
   --color-orange-dark: #E65100;
@@ -61,6 +63,8 @@
   --color-text-primary: #FFFFFF;
   --color-text-secondary: #B4BCD0;
   --color-text-muted: #6B7280;
+
+  --text-gradient-primary: linear-gradient(to right, #FFFFFF, #CCCCCC);
 
   --glass-bg: rgba(24, 27, 33, 0.7);
   --glass-border: rgba(255, 255, 255, 0.08);

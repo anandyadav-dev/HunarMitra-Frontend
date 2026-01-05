@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Volume2, User, Phone, MapPin, Briefcase, ChevronDown, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -21,6 +21,11 @@ const WorkerRegistration = () => {
         aadhaar: '',
         agreed: false
     });
+
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const skillsList = [
         { id: 'electrician', label: t.electrician, icon: '⚡' },
