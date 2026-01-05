@@ -214,7 +214,7 @@ const Header = () => {
               </button>
             </div>
 
-            <a href="tel:+919876543210" className="btn btn-outline" style={{ width: '100%', maxWidth: '200px', justifyContent: 'center', border: '1px solid var(--color-orange)', color: 'var(--color-orange)' }}>
+            <a href="tel:+919984694243" className="btn btn-outline" style={{ width: '100%', maxWidth: '200px', justifyContent: 'center', border: '1px solid var(--color-orange)', color: 'var(--color-orange)' }}>
               📞 Call Support
             </a>
 

@@ -100,7 +100,7 @@ const ContractorRegistration = () => {
                                         <Phone size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
                                         <input
                                             type="tel"
-                                            placeholder="98765 43210"
+                                            placeholder="99846 94243"
                                             value={formData.mobile}
                                             onChange={e => setFormData({ ...formData, mobile: e.target.value })}
                                             required
