@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, User, Phone, MapPin, Mail, ShieldCheck, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -19,6 +19,11 @@ const ContractorRegistration = () => {
         city: '',
         agreed: false
     });
+
+    // Scroll to top on mount
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     const handleOtpChange = (index, value) => {
         if (isNaN(value)) return;
