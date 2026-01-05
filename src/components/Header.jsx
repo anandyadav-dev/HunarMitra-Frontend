@@ -39,7 +39,9 @@ const Header = () => {
         background: isScrolled ? 'var(--glass-bg)' : 'transparent',
         backdropFilter: isScrolled ? 'blur(12px)' : 'none',
         boxShadow: isScrolled ? 'var(--shadow-sm)' : 'none',
-        borderBottom: isScrolled ? '1px solid var(--glass-border)' : 'none'
+        borderBottom: isScrolled ? '1px solid var(--glass-border)' : 'none',
+        transform: 'translate3d(0, 0, 0)', // Force hardware acceleration for smoother sticky support
+        WebkitTransform: 'translate3d(0, 0, 0)'
       }}
     >
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -131,18 +133,31 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Menu Button - Forced Absolute Position for Visibility */}
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           style={{
-            display: 'block',
-            background: 'none',
-            border: 'none',
-            color: 'var(--color-text-primary)',
+            position: 'absolute', // Break out of container flow
+            right: '1rem',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            display: 'flex', // flex for centering icon
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'var(--glass-bg)',
+            backdropFilter: 'blur(8px)',
+            border: '1px solid var(--glass-border)',
+            borderRadius: '8px',
+            padding: '0.6rem',
+            color: 'var(--color-orange)',
             fontSize: '1.5rem',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            zIndex: 1001,
+            boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
           }}
           className="mobile-toggle"
+          aria-label="Toggle Menu"
         >
           {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -198,6 +213,10 @@ const Header = () => {
                 {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />} {t('switchTheme')}
               </button>
             </div>
+
+            <a href="tel:+919876543210" className="btn btn-outline" style={{ width: '100%', maxWidth: '200px', justifyContent: 'center', border: '1px solid var(--color-orange)', color: 'var(--color-orange)' }}>
+              📞 Call Support
+            </a>
 
             <button
               className="btn btn-primary-orange"
