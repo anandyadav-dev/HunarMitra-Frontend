@@ -1,34 +1,77 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useLanguage } from '../context/LanguageContext';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
 
+import heroConnect from '../assets/images/hero_connect.png';
+import heroVerify from '../assets/images/hero_verify.png';
+import heroPayment from '../assets/images/hero_payment.png';
+
 // Section Content Data
-const heroSections = [
+// Section Content Data
+// NOTE: We cannot easily use the hook inside this constant definition. 
+// We will modify the usage inside the component or move this data inside the component.
+// Best approach: Move heroSections inside the component or specific text component to access `t`.
+// However, since it is an array used in rendering, let's wrap the data creation in a memo or hook.
+// For now, let's modify the TextSection to accept translated strings or use ids to look them up?
+// Actually, easier refactor: Move the data array inside the Hero component or a custom hook.
+
+const getHeroSections = (t) => [
     {
         id: 1,
-        title: "Connect with Skilled Labor",
-        subtitle: "India's efficient marketplace for construction talent.",
-        desc: "Stop waiting at labor chowks. Find verified carpenters, masons, and electricians instantly. We bridge the gap between skill and opportunity.",
-        image: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80", // Construction worker/Action
+        title: t('heroTitle'), // "Connect with Skilled Labor" -> close match in translations? "Connecting Skilled Workers with..."
+        subtitle: t('heroSubtitle'), // "India's efficient marketplace..." -> "HunarMitra helps you..."
+        desc: t('empowering'), // Using available keys or we need to add new keys. 
+        // The existing translations.js has different text than Hero.jsx currently has. 
+        // I will use valid keys from translations.js to ensure it works, even if text changes slightly, or I should have updated translations.js first.
+        // Let's check translations.js content again.
+        // translations.js has: heroTitle, heroSubtitle, empowering.
+        // Hero.jsx has: "Connect with Skilled Labor", "India's efficient marketplace...", etc.
+        // The texts are DIFFERENT. I should probably add the specific Hero texts to translations.js to preserve the current content, OR use the existing translations.
+        // Given the user wants to FIX the translator, using the keys that EXIST in translations.js is the safest bet to prove it works.
+        // But the visuals might change. 
+        // Let's assume the user wants the CURRENT Hero text translated. 
+        // I will update translations.js FIRST to include the specific Hero text keys if I want to keep exact text, 
+        // OR I will just map to the existing keys if they are close enough.
+        // Looking at translations.js, it seems generic.
+        // Let's update Hero.jsx to use the Existing keys for now to demonstrate functionality, as that is the specific request ("translator work nahi kar raha").
+        image: heroConnect,
         color: "from-orange-500 to-red-500"
     },
     {
         id: 2,
-        title: "Verified & Trusted",
-        subtitle: "Safety and reliability you can count on.",
-        desc: "Every worker profile is verified with KYC. Contractors are vetted. Build with confidence knowing you have a trustworthy team.",
-        image: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80", // Electrician working
+        title: t('contractorBenefits1'), // "Verified & Trusted" -> "Hire skilled labor"? No.
+        subtitle: t('contractorBenefits3'),
+        desc: t('heroSubtitle'),
+        image: heroVerify,
         color: "from-blue-500 to-cyan-500"
     },
     {
         id: 3,
-        title: "Secure Payments & Growth",
-        subtitle: "Digital payments and financial security for all.",
-        desc: "Transparent transactions. Workers get paid on time, contractors track expenses easily. Focused on growing India's infrastructure, together.",
-        image: "https://images.unsplash.com/photo-1607472586893-edb57bdc0e39?auto=format&fit=crop&q=80", // Plumber/Fixing
+        title: t('contractorBenefits2'),
+        subtitle: t('contractorBenefits3'),
+        desc: t('heroSubtitle'),
+        image: heroPayment,
         color: "from-green-500 to-emerald-500"
     }
 ];
+
+// Wait, this is messy. The best way is to update translations.js to match Hero.jsx OR update Hero.jsx to use keys that make sense.
+// Let's look at the plan. "Use the t() helper to translate static text in the Hero section".
+// I'll proceed with moving the array inside the component and using `t`. I will use temporary strings if keys don't exist, but that won't translate.
+// So I MUST add the keys to translations.js first for the BEST result.
+// However, I am in the middle of tool calls.
+// Let's modify Hero.jsx to accept `t` and use the keys that are clearly available, or pass strings.
+// Actually, I'll update Hero.jsx to use `t` and assume keys for the current text, and then I will update translations.js to include those keys. This is a solid plan.
+
+// Hero.jsx keys to add:
+// hero_slide1_title, hero_slide1_subtitle, hero_slide1_desc
+// hero_slide2_title, hero_slide2_subtitle, hero_slide2_desc
+// hero_slide3_title, hero_slide3_subtitle, hero_slide3_desc
+
+// Step 1: Update translations.js with NEW keys.
+// Step 2: Update Hero.jsx to use those keys.
+
 
 const TextSection = ({ section, setIndex, index }) => {
     const ref = useRef(null);
@@ -96,9 +139,39 @@ const TextSection = ({ section, setIndex, index }) => {
 };
 
 const Hero = () => {
+    const { t } = useLanguage(); // Make sure to import useLanguage if not imported, or pass it down? 
+    // Actual component structure check: imports are at top. Need to make sure useLanguage is imported.
     const [activeIndex, setActiveIndex] = useState(0);
     const containerRef = useRef(null);
     const { scrollYProgress } = useScroll({ target: containerRef });
+
+    // Section Content Data
+    const heroSections = [
+        {
+            id: 1,
+            title: t('hero_slide1_title'),
+            subtitle: t('hero_slide1_subtitle'),
+            desc: t('hero_slide1_desc'),
+            image: heroConnect,
+            color: "from-orange-500 to-red-500"
+        },
+        {
+            id: 2,
+            title: t('hero_slide2_title'),
+            subtitle: t('hero_slide2_subtitle'),
+            desc: t('hero_slide2_desc'),
+            image: heroVerify,
+            color: "from-blue-500 to-cyan-500"
+        },
+        {
+            id: 3,
+            title: t('hero_slide3_title'),
+            subtitle: t('hero_slide3_subtitle'),
+            desc: t('hero_slide3_desc'),
+            image: heroPayment,
+            color: "from-green-500 to-emerald-500"
+        }
+    ];
 
     // Smooth progress bar
     const scaleX = useSpring(scrollYProgress, {
