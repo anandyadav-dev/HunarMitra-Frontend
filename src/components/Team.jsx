@@ -19,11 +19,11 @@ const Team = () => {
             role: "Lead Developer",
             image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80"
         },
-      
+
     ];
 
     return (
-        <section className="section">
+        <section className="section" style={{ background: 'var(--color-bg-primary)', position: 'relative', zIndex: 10 }}>
             <div className="container">
                 <motion.div
                     initial={{ opacity: 0, y: 30 }}
