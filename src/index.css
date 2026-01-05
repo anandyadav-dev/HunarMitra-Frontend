@@ -396,7 +396,8 @@ ul {
   border-radius: 1rem;
   transition: transform 0.4s ease;
   background: white;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.4), 0 8px 10px -6px rgba(59, 130, 246, 0.2);
+  /* Blue Glow */
 }
 
 .team-card img {
@@ -429,22 +430,6 @@ ul {
 .team-card:hover .team-info {
   transform: translateY(0);
   opacity: 1;
-}
-
-/* Default Blue Glow Shadow */
-.team-card::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  background: linear-gradient(to top, rgba(59, 130, 246, 0.5) 0%, transparent 100%);
-  opacity: 1;
-  z-index: 1;
-  border-bottom-left-radius: 1rem;
-  border-bottom-right-radius: 1rem;
-  pointer-events: none;
 }
 
 .team-card::after {
