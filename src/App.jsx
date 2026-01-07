@@ -32,20 +32,26 @@ import ScrollToTop from './components/ScrollToTop';
 
 // ... (imports)
 
+import { LocationProvider } from './context/LocationContext';
+
+// ... (imports)
+
 function App() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <Router>
-          <ScrollToTop />
-          <div className="app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-            <Header />
-            <main style={{ flex: 1 }}>
-              <AnimatedRoutes />
-            </main>
-            <Footer />
-          </div>
-        </Router>
+        <LocationProvider>
+          <Router>
+            <ScrollToTop />
+            <div className="app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+              <Header />
+              <main style={{ flex: 1 }}>
+                <AnimatedRoutes />
+              </main>
+              <Footer />
+            </div>
+          </Router>
+        </LocationProvider>
       </LanguageProvider>
     </ThemeProvider>
   );

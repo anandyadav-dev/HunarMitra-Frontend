@@ -79,6 +79,13 @@ export const translations = {
         contactPerson: "Contact Person Name",
         workersRequired: "Workers Required",
         registerSecurely: "Register Securely",
+
+        // Globe Section
+        globeTitlePre: "Connecting",
+        globeTitleHighlight: "India's",
+        globeTitlePost: "Talent",
+        globeSubtitle: "A unified network bridging skilled artisans with the opportunities they deserve across the nation.",
+
         // Success & Error
         registrationSuccess: "Registration Successful!",
         registrationSuccessSubtitle: "Welcome to HunarMitra",
@@ -165,6 +172,13 @@ export const translations = {
         contactPerson: "संपर्क व्यक्ति का नाम",
         workersRequired: "आवश्यक वर्कर्स",
         registerSecurely: "सुरक्षित रूप से रजिस्टर करें",
+
+        // Globe Section
+        globeTitlePre: "भारत की",
+        globeTitleHighlight: "प्रतिभा",
+        globeTitlePost: "को जोड़ना",
+        globeSubtitle: "कुशल कारीगरों को देश भर में उन अवसरों से जोड़ने वाला एक एकीकृत नेटवर्क जिसके वे हकदार हैं।",
+
         // Success & Error
         registrationSuccess: "पंजीकरण सफल!",
         registrationSuccessSubtitle: "हुनरमित्र में आपका स्वागत है",

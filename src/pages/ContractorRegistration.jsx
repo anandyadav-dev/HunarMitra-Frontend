@@ -20,6 +20,8 @@ const ContractorRegistration = () => {
         agreed: false
     });
 
+    const [errors, setErrors] = useState({});
+
     // Scroll to top on step change
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -39,13 +41,51 @@ const ContractorRegistration = () => {
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Company Name validation
+        if (!formData.companyName.trim()) {
+            newErrors.companyName = t.companyName + ' is required';
+        }
+
+        // Contact Person validation
+        if (!formData.contactPerson.trim()) {
+            newErrors.contactPerson = t.contactPerson + ' is required';
+        }
+
+        // Mobile validation
+        const mobileRegex = /^[0-9]{10}$/;
+        if (!mobileRegex.test(formData.mobile)) {
+            newErrors.mobile = language === 'hi' ? 'मोबाइल नंबर 10 अंकों का होना चाहिए' : 'Mobile number must be exactly 10 digits';
+        }
+
+        // City validation
+        if (!formData.city.trim()) {
+            newErrors.city = t.city + ' is required';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+        // Clear error for the field
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: '' }));
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setError('');
 
         if (step === 1) {
-            // Simulate OTP sending
-            setStep(2);
+            if (validateForm()) {
+                // Simulate OTP sending
+                setStep(2);
+            }
         } else if (step === 2) {
             // Verify OTP
             const enteredOtp = otp.join('');
@@ -94,15 +134,15 @@ const ContractorRegistration = () => {
                                             type="text"
                                             placeholder="e.g. Sharma Constructions"
                                             value={formData.companyName}
-                                            onChange={e => setFormData({ ...formData, companyName: e.target.value })}
-                                            required
+                                            onChange={e => handleChange('companyName', e.target.value)}
                                             style={{
                                                 width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                borderRadius: 'var(--radius-lg)', border: errors.companyName ? '1px solid red' : '1px solid var(--glass-border)',
                                                 background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                             }}
                                         />
                                     </div>
+                                    {errors.companyName && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.companyName}</p>}
                                 </div>
 
                                 {/* Contact Person */}
@@ -114,15 +154,15 @@ const ContractorRegistration = () => {
                                             type="text"
                                             placeholder="Your Name"
                                             value={formData.contactPerson}
-                                            onChange={e => setFormData({ ...formData, contactPerson: e.target.value })}
-                                            required
+                                            onChange={e => handleChange('contactPerson', e.target.value)}
                                             style={{
                                                 width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                borderRadius: 'var(--radius-lg)', border: errors.contactPerson ? '1px solid red' : '1px solid var(--glass-border)',
                                                 background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                             }}
                                         />
                                     </div>
+                                    {errors.contactPerson && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.contactPerson}</p>}
                                 </div>
 
                                 {/* Mobile */}
@@ -139,16 +179,16 @@ const ContractorRegistration = () => {
                                                 type="tel"
                                                 placeholder="99846 94243"
                                                 value={formData.mobile}
-                                                onChange={e => setFormData({ ...formData, mobile: e.target.value })}
-                                                required
+                                                onChange={e => handleChange('mobile', e.target.value)}
                                                 style={{
                                                     width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                    borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                    borderRadius: 'var(--radius-lg)', border: errors.mobile ? '1px solid red' : '1px solid var(--glass-border)',
                                                     background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                                 }}
                                             />
                                         </div>
                                     </div>
+                                    {errors.mobile && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.mobile}</p>}
                                 </div>
 
                                 {/* City */}
@@ -160,15 +200,15 @@ const ContractorRegistration = () => {
                                             type="text"
                                             placeholder="Project Location"
                                             value={formData.city}
-                                            onChange={e => setFormData({ ...formData, city: e.target.value })}
-                                            required
+                                            onChange={e => handleChange('city', e.target.value)}
                                             style={{
                                                 width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                borderRadius: 'var(--radius-lg)', border: errors.city ? '1px solid red' : '1px solid var(--glass-border)',
                                                 background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                             }}
                                         />
                                     </div>
+                                    {errors.city && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.city}</p>}
                                 </div>
 
                                 {/* Workers Required */}
