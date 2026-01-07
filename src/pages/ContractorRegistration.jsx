@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Building2, User, Phone, MapPin, Mail, ShieldCheck, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
+import { useLocationContext } from '../context/LocationContext';
 import RegistrationSuccess from '../components/RegistrationSuccess';
 
 const ContractorRegistration = () => {
@@ -19,6 +20,14 @@ const ContractorRegistration = () => {
         city: '',
         agreed: false
     });
+
+    const { city } = useLocationContext();
+
+    useEffect(() => {
+        if (city && !formData.city) {
+            setFormData(prev => ({ ...prev, city }));
+        }
+    }, [city]);
 
     const [errors, setErrors] = useState({});
 

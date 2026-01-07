@@ -12,6 +12,8 @@ import Home from './pages/Home';
 import RoleSelection from './pages/RoleSelection';
 import WorkerRegistration from './pages/WorkerRegistration';
 import ContractorRegistration from './pages/ContractorRegistration';
+import Contact from './pages/Contact';
+import FAQ from './pages/FAQ';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -23,6 +25,8 @@ const AnimatedRoutes = () => {
         <Route path="/role-selection" element={<RoleSelection />} />
         <Route path="/register/worker" element={<WorkerRegistration />} />
         <Route path="/register/contractor" element={<ContractorRegistration />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/faq" element={<FAQ />} />
       </Routes>
     </AnimatePresence>
   );
@@ -33,6 +37,7 @@ import ScrollToTop from './components/ScrollToTop';
 // ... (imports)
 
 import { LocationProvider } from './context/LocationContext';
+import LocationPrompt from './components/LocationPrompt';
 
 // ... (imports)
 
@@ -43,6 +48,7 @@ function App() {
         <LocationProvider>
           <Router>
             <ScrollToTop />
+            <LocationPrompt />
             <div className="app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
               <Header />
               <main style={{ flex: 1 }}>

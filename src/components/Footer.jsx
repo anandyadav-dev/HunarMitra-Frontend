@@ -50,13 +50,19 @@ const Footer = () => {
                     <div>
                         <h4 style={{ color: '#ffffff', marginBottom: '1.5rem', fontSize: '1.1rem' }}>Platform</h4>
                         <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                            {['Home', 'About Us', 'Services', 'Pricing', 'Safety'].map(item => (
-                                <li key={item}>
-                                    <a href="#" style={{ color: '#9CA3AF', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.9rem' }}
+                            {[
+                                { name: 'Home', path: '/' },
+                                { name: 'About Us', path: '#' },
+                                { name: 'Services', path: '#' },
+                                { name: 'Pricing', path: '#' },
+                                { name: 'Safety', path: '#' }
+                            ].map(item => (
+                                <li key={item.name}>
+                                    <a href={item.path} style={{ color: '#9CA3AF', textDecoration: 'none', transition: 'color 0.2s', fontSize: '0.9rem' }}
                                         onMouseEnter={e => e.target.style.color = '#FF6B2C'}
                                         onMouseLeave={e => e.target.style.color = '#9CA3AF'}
                                     >
-                                        {item}
+                                        {item.name}
                                     </a>
                                 </li>
                             ))}

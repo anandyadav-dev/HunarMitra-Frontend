@@ -22,8 +22,8 @@ const Header = () => {
   const navLinks = [
     { name: t('home'), path: '/' },
     { name: t('kiosk'), path: '#' },
-    { name: t('faq'), path: '#' },
-    { name: t('contact'), path: '#' },
+    { name: t('faq'), path: '/faq' },
+    { name: t('contact'), path: '/contact' },
   ];
 
   return (
