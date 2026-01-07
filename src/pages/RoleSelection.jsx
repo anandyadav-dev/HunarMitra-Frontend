@@ -31,7 +31,7 @@ const RoleSelection = () => {
                     <p style={{ fontSize: '1.2rem' }}>{t.chooseRole}</p>
                 </div>
 
-                <div style={{
+                <div className="role-selection-grid" style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
                     gap: '2rem',
@@ -120,6 +120,13 @@ const RoleSelection = () => {
                         </motion.div>
                     </Link>
                 </div>
+                <style>{`
+                    @media (max-width: 768px) {
+                        .role-selection-grid {
+                            grid-template-columns: 1fr !important;
+                        }
+                    }
+                `}</style>
 
                 <div style={{ textAlign: 'center', marginTop: '3rem' }}>
                     <p style={{ color: 'var(--color-text-muted)' }}>{t.supportText} <a href="#" style={{ color: 'var(--color-blue)' }}>Support</a></p>
