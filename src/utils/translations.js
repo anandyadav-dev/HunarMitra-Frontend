@@ -86,6 +86,29 @@ export const translations = {
         globeTitlePost: "Talent",
         globeSubtitle: "A unified network bridging skilled artisans with the opportunities they deserve across the nation.",
 
+        // Contact Page
+        contactTitle: "Contact Us",
+        contactSubtitle: "We'd love to hear from you",
+        emailLabel: "Email Address",
+        subjectLabel: "Subject",
+        messageLabel: "Message",
+        sendMessage: "Send Message",
+        sending: "Sending...",
+        messageSent: "Message Sent Successfully!",
+        contactError: "Something went wrong. Please try again.",
+
+        // FAQ Page
+        faqTitle: "Frequently Asked Questions",
+        faqSubtitle: "Find answers to common questions about using HunarMitra",
+        faq_q1: "How do I register as a worker?",
+        faq_a1: "Click on 'Register Now' and select 'I am a Worker'. Fill in your details like name, skills, and city. Verify your mobile number with OTP to complete registration.",
+        faq_q2: "Is there a fee for registration?",
+        faq_a2: "No, registration is completely free for workers. We aim to help you find work without any upfront costs.",
+        faq_q3: "How do I find trusted contractors?",
+        faq_a3: "Once registered, you can view job listings from verified contractors in your city. You can also get notifications for relevant jobs.",
+        faq_q4: "How can I hire skilled labor?",
+        faq_a4: "Register as a Contractor, post your requirements, or browse worker profiles filtered by skill and location. You can contact them directly through the platform.",
+
         // Success & Error
         registrationSuccess: "Registration Successful!",
         registrationSuccessSubtitle: "Welcome to HunarMitra",
@@ -178,6 +201,29 @@ export const translations = {
         globeTitleHighlight: "प्रतिभा",
         globeTitlePost: "को जोड़ना",
         globeSubtitle: "कुशल कारीगरों को देश भर में उन अवसरों से जोड़ने वाला एक एकीकृत नेटवर्क जिसके वे हकदार हैं।",
+
+        // Contact Page
+        contactTitle: "संपर्क करें",
+        contactSubtitle: "हम आपसे सुनना पसंद करेंगे",
+        emailLabel: "ईमेल पता",
+        subjectLabel: "विषय",
+        messageLabel: "संदेश",
+        sendMessage: "संदेश भेजें",
+        sending: "भेज रहा है...",
+        messageSent: "संदेश सफलतापूर्वक भेजा गया!",
+        contactError: "कुछ गलत हो गया। कृपया पुन: प्रयास करें।",
+
+        // FAQ Page
+        faqTitle: "सामान्य प्रश्न",
+        faqSubtitle: "हुनरमित्र का उपयोग करने के बारे में सामान्य प्रश्नों के उत्तर खोजें",
+        faq_q1: "मैं एक कामगार के रूप में कैसे पंजीकरण करूं?",
+        faq_a1: "'अभी रजिस्टर करें' पर क्लिक करें और 'मैं एक कामगार हूं' चुनें। अपना विवरण जैसे नाम, कौशल और शहर भरें। पंजीकरण पूरा करने के लिए OTP के साथ अपना मोबाइल नंबर सत्यापित करें।",
+        faq_q2: "क्या पंजीकरण के लिए कोई शुल्क है?",
+        faq_a2: "नहीं, कामगारों के लिए पंजीकरण पूरी तरह से मुफ्त है। हमारा उद्देश्य बिना किसी अग्रिम लागत के काम खोजने में आपकी मदद करना है।",
+        faq_q3: "मैं भरोसेमंद ठेकेदार कैसे ढूंढूं?",
+        faq_a3: "पंजीकरण के बाद, आप अपने शहर में सत्यापित ठेकेदारों से नौकरी की सूची देख सकते हैं। आप प्रासंगिक नौकरियों के लिए सूचनाएं भी प्राप्त कर सकते हैं।",
+        faq_q4: "मैं कुशल श्रमिकों को कैसे काम पर रख सकता हूं?",
+        faq_a4: "एक ठेकेदार के रूप में पंजीकरण करें, अपनी आवश्यकताओं को पोस्ट करें, या कौशल और स्थान के आधार पर फ़िल्टर किए गए वर्कर प्रोफाइल ब्राउज़ करें। आप प्लेटफ़ॉर्म के माध्यम से सीधे उनसे संपर्क कर सकते हैं।",
 
         // Success & Error
         registrationSuccess: "पंजीकरण सफल!",

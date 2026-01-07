@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Volume2, User, Phone, MapPin, Briefcase, ChevronDown, CheckSquare, Square, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
+import { useLocationContext } from '../context/LocationContext';
 import RegistrationSuccess from '../components/RegistrationSuccess';
 
 const WorkerRegistration = () => {
@@ -21,6 +22,14 @@ const WorkerRegistration = () => {
         aadhaar: '',
         agreed: false
     });
+
+    const { city } = useLocationContext();
+
+    useEffect(() => {
+        if (city && !formData.city) {
+            setFormData(prev => ({ ...prev, city }));
+        }
+    }, [city]);
 
     const [errors, setErrors] = useState({});
 
