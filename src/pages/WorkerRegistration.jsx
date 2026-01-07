@@ -22,6 +22,8 @@ const WorkerRegistration = () => {
         agreed: false
     });
 
+    const [errors, setErrors] = useState({});
+
     // Scroll to top on step change
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -37,12 +39,17 @@ const WorkerRegistration = () => {
     ];
 
     const handleSkillToggle = (id) => {
-        setFormData(prev => ({
-            ...prev,
-            skills: prev.skills.includes(id)
+        setFormData(prev => {
+            const newSkills = prev.skills.includes(id)
                 ? prev.skills.filter(s => s !== id)
-                : [...prev.skills, id]
-        }));
+                : [...prev.skills, id];
+
+            // Clear error if skills selected
+            if (newSkills.length > 0 && errors.skills) {
+                setErrors(prevErrors => ({ ...prevErrors, skills: '' }));
+            }
+            return { ...prev, skills: newSkills };
+        });
     };
 
     const handleAudioAssist = () => {
@@ -69,13 +76,56 @@ const WorkerRegistration = () => {
         }
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Name validation
+        if (!formData.name.trim()) {
+            newErrors.name = t.fullName + ' is required';
+        }
+
+        // Mobile validation
+        const mobileRegex = /^[0-9]{10}$/;
+        if (!mobileRegex.test(formData.mobile)) {
+            newErrors.mobile = language === 'hi' ? 'मोबाइल नंबर 10 अंकों का होना चाहिए' : 'Mobile number must be exactly 10 digits';
+        }
+
+        // Skills validation
+        if (formData.skills.length === 0) {
+            newErrors.skills = language === 'hi' ? 'कृपया कम से कम एक कौशल चुनें' : 'Please select at least one skill';
+        }
+
+        // City validation
+        if (!formData.city.trim()) {
+            newErrors.city = t.city + ' is required';
+        }
+
+        // Experience validation
+        if (!formData.experience) {
+            newErrors.experience = language === 'hi' ? 'कृपया अनुभव चुनें' : 'Please select experience';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleChange = (field, value) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+        // Clear error for the field
+        if (errors[field]) {
+            setErrors(prev => ({ ...prev, [field]: '' }));
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
         setError('');
 
         if (step === 1) {
-            // Simulate OTP sending
-            setStep(2);
+            if (validateForm()) {
+                // Simulate OTP sending
+                setStep(2);
+            }
         } else if (step === 2) {
             // Verify OTP
             const enteredOtp = otp.join('');
@@ -133,15 +183,15 @@ const WorkerRegistration = () => {
                                             type="text"
                                             placeholder="e.g. Rahul Kumar"
                                             value={formData.name}
-                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                            required
+                                            onChange={e => handleChange('name', e.target.value)}
                                             style={{
                                                 width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                borderRadius: 'var(--radius-lg)', border: errors.name ? '1px solid red' : '1px solid var(--glass-border)',
                                                 background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                             }}
                                         />
                                     </div>
+                                    {errors.name && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.name}</p>}
                                 </div>
 
                                 {/* Mobile */}
@@ -158,16 +208,16 @@ const WorkerRegistration = () => {
                                                 type="tel"
                                                 placeholder="99846 94243"
                                                 value={formData.mobile}
-                                                onChange={e => setFormData({ ...formData, mobile: e.target.value })}
-                                                required
+                                                onChange={e => handleChange('mobile', e.target.value)}
                                                 style={{
                                                     width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                    borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                    borderRadius: 'var(--radius-lg)', border: errors.mobile ? '1px solid red' : '1px solid var(--glass-border)',
                                                     background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                                 }}
                                             />
                                         </div>
                                     </div>
+                                    {errors.mobile && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.mobile}</p>}
                                 </div>
 
                                 {/* Skills */}
@@ -180,7 +230,7 @@ const WorkerRegistration = () => {
                                                 onClick={() => handleSkillToggle(skill.id)}
                                                 style={{
                                                     padding: '1rem', borderRadius: 'var(--radius-lg)',
-                                                    border: `1px solid ${formData.skills.includes(skill.id) ? 'var(--color-orange)' : 'var(--glass-border)'}`,
+                                                    border: `1px solid ${formData.skills.includes(skill.id) ? 'var(--color-orange)' : (errors.skills ? 'red' : 'var(--glass-border)')}`,
                                                     background: formData.skills.includes(skill.id) ? 'rgba(255, 107, 44, 0.1)' : 'var(--color-bg-tertiary)',
                                                     cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem',
                                                     transition: 'all 0.2s'
@@ -191,6 +241,7 @@ const WorkerRegistration = () => {
                                             </div>
                                         ))}
                                     </div>
+                                    {errors.skills && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.skills}</p>}
                                 </div>
 
                                 {/* Location & Experience Row */}
@@ -203,24 +254,24 @@ const WorkerRegistration = () => {
                                                 type="text"
                                                 placeholder="City"
                                                 value={formData.city}
-                                                onChange={e => setFormData({ ...formData, city: e.target.value })}
-                                                required
+                                                onChange={e => handleChange('city', e.target.value)}
                                                 style={{
                                                     width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                    borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                    borderRadius: 'var(--radius-lg)', border: errors.city ? '1px solid red' : '1px solid var(--glass-border)',
                                                     background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
                                                 }}
                                             />
                                         </div>
+                                        {errors.city && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.city}</p>}
                                     </div>
                                     <div style={{ flex: 1 }}>
                                         <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.experience}</label>
                                         <select
                                             value={formData.experience}
-                                            onChange={e => setFormData({ ...formData, experience: e.target.value })}
+                                            onChange={e => handleChange('experience', e.target.value)}
                                             style={{
                                                 width: '100%', padding: '1rem', height: '54px',
-                                                borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)',
+                                                borderRadius: 'var(--radius-lg)', border: errors.experience ? '1px solid red' : '1px solid var(--glass-border)',
                                                 background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)', appearance: 'none'
                                             }}
                                         >
@@ -229,6 +280,7 @@ const WorkerRegistration = () => {
                                             <option value="2-5">2-5 {t.years}</option>
                                             <option value="5+">5+ {t.years}</option>
                                         </select>
+                                        {errors.experience && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.experience}</p>}
                                     </div>
                                 </div>
 

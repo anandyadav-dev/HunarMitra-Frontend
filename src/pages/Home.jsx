@@ -4,6 +4,7 @@ import Hero from '../components/Hero';
 import Features from '../components/Features';
 import HowItWorks from '../components/HowItWorks';
 import Team from '../components/Team';
+import Globe3D from '../components/Globe3D';
 
 const Home = () => {
     return (
@@ -16,7 +17,8 @@ const Home = () => {
             <Hero />
             <HowItWorks />
             <Features />
-            <Team />
+            {/* <Team /> */}
+            <Globe3D />
         </motion.div>
     );
 };
