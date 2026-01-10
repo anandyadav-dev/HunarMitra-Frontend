@@ -5,23 +5,33 @@ import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
 import { useLocationContext } from '../context/LocationContext';
 import RegistrationSuccess from '../components/RegistrationSuccess';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const ContractorRegistration = () => {
     const { language } = useLanguage();
     const t = translations[language];
-    const [step, setStep] = useState(1); // 1: Form, 2: OTP, 3: Success
-    const [otp, setOtp] = useState(['', '', '', '']);
-    const [error, setError] = useState('');
+    const location = useLocation();
+    const navigate = useNavigate();
+    const mobile = location.state?.mobile;
+
+    const [isSuccess, setIsSuccess] = useState(false);
     const [formData, setFormData] = useState({
         companyName: '',
         contactPerson: '',
-        mobile: '',
+        mobile: mobile || '',
         email: '',
         city: '',
+        workersRequired: [],
         agreed: false
     });
 
-    const { city } = useLocationContext();
+    const { city, latitude, longitude } = useLocationContext();
+
+    useEffect(() => {
+        if (!mobile) {
+            navigate('/register');
+        }
+    }, [mobile, navigate]);
 
     useEffect(() => {
         if (city && !formData.city) {
@@ -31,45 +41,17 @@ const ContractorRegistration = () => {
 
     const [errors, setErrors] = useState({});
 
-    // Scroll to top on step change
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [step]);
-
-    const handleOtpChange = (index, value) => {
-        if (isNaN(value)) return;
-
-        const newOtp = [...otp];
-        newOtp[index] = value;
-        setOtp(newOtp);
-
-        // Auto focus next input
-        if (value && index < 3) {
-            const nextInput = document.getElementById(`otp-${index + 1}`);
-            if (nextInput) nextInput.focus();
-        }
-    };
-
     const validateForm = () => {
         const newErrors = {};
 
-        // Company Name validation
         if (!formData.companyName.trim()) {
             newErrors.companyName = t.companyName + ' is required';
         }
 
-        // Contact Person validation
         if (!formData.contactPerson.trim()) {
             newErrors.contactPerson = t.contactPerson + ' is required';
         }
 
-        // Mobile validation
-        const mobileRegex = /^[0-9]{10}$/;
-        if (!mobileRegex.test(formData.mobile)) {
-            newErrors.mobile = language === 'hi' ? 'मोबाइल नंबर 10 अंकों का होना चाहिए' : 'Mobile number must be exactly 10 digits';
-        }
-
-        // City validation
         if (!formData.city.trim()) {
             newErrors.city = t.city + ' is required';
         }
@@ -80,31 +62,77 @@ const ContractorRegistration = () => {
 
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
-        // Clear error for the field
         if (errors[field]) {
             setErrors(prev => ({ ...prev, [field]: '' }));
         }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setError('');
-
-        if (step === 1) {
-            if (validateForm()) {
-                // Simulate OTP sending
-                setStep(2);
-            }
-        } else if (step === 2) {
-            // Verify OTP
-            const enteredOtp = otp.join('');
-            if (enteredOtp === '1234') {
-                setStep(3); // Success Step
+    const handleWorkerTypeToggle = (type) => {
+        setFormData(prev => {
+            const current = prev.workersRequired || [];
+            if (current.includes(type)) {
+                return { ...prev, workersRequired: current.filter(t => t !== type) };
             } else {
-                setError(t.invalidOtp);
+                return { ...prev, workersRequired: [...current, type] };
             }
+        });
+        if (errors.workersRequired) {
+            setErrors(prev => ({ ...prev, workersRequired: '' }));
         }
     };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
+        if (validateForm()) {
+            // Prepare Payload for Backend
+            const payload = {
+                role: 'contractor',
+                companyName: formData.companyName,
+                contactPerson: formData.contactPerson,
+                mobile: formData.mobile,
+                email: formData.email, // If captured, currently empty string in state initial
+                city: formData.city,
+                workersRequired: formData.workersRequired,
+                latitude: latitude,
+                longitude: longitude,
+                termsAccepted: true,
+                language: language
+            };
+
+            // Simulate API call
+            setTimeout(() => {
+                console.log("Contractor Registration Payload:", JSON.stringify(payload, null, 2));
+                setIsSuccess(true);
+            }, 500);
+        }
+    };
+
+    if (isSuccess) {
+        return (
+            <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                style={{
+                    minHeight: '100vh',
+                    paddingTop: '100px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'var(--color-bg-primary)'
+                }}
+            >
+                <div className="container" style={{ maxWidth: '600px' }}>
+                    <div className="glass-card" style={{ padding: '3rem', borderTop: '4px solid var(--color-green)' }}>
+                        <RegistrationSuccess />
+                        <div style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--color-text-secondary)' }}>
+                            <p>{t.welcome} {formData.contactPerson}!</p>
+                        </div>
+                    </div>
+                </div>
+            </motion.div>
+        );
+    }
 
     return (
         <motion.div
@@ -131,184 +159,119 @@ const ContractorRegistration = () => {
                     </div>
 
                     <form onSubmit={handleSubmit}>
-                        {step === 1 ? (
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
 
-                                {/* Company Name */}
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.companyName}</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <Building2 size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                        <input
-                                            type="text"
-                                            placeholder="e.g. Sharma Constructions"
-                                            value={formData.companyName}
-                                            onChange={e => handleChange('companyName', e.target.value)}
-                                            style={{
-                                                width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                borderRadius: 'var(--radius-lg)', border: errors.companyName ? '1px solid red' : '1px solid var(--glass-border)',
-                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
-                                            }}
-                                        />
-                                    </div>
-                                    {errors.companyName && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.companyName}</p>}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+
+                            {/* Company Name */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.companyName}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <Building2 size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="e.g. Sharma Constructions"
+                                        value={formData.companyName}
+                                        onChange={e => handleChange('companyName', e.target.value)}
+                                        style={{
+                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                            borderRadius: 'var(--radius-lg)', border: errors.companyName ? '1px solid red' : '1px solid var(--glass-border)',
+                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                        }}
+                                    />
                                 </div>
-
-                                {/* Contact Person */}
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.contactPerson}</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <User size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                        <input
-                                            type="text"
-                                            placeholder="Your Name"
-                                            value={formData.contactPerson}
-                                            onChange={e => handleChange('contactPerson', e.target.value)}
-                                            style={{
-                                                width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                borderRadius: 'var(--radius-lg)', border: errors.contactPerson ? '1px solid red' : '1px solid var(--glass-border)',
-                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
-                                            }}
-                                        />
-                                    </div>
-                                    {errors.contactPerson && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.contactPerson}</p>}
-                                </div>
-
-                                {/* Mobile */}
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.mobileNumber}</label>
-                                    <div style={{ display: 'flex', gap: '1rem' }}>
-                                        <span style={{
-                                            padding: '1rem', background: 'var(--color-bg-tertiary)',
-                                            borderRadius: 'var(--radius-lg)', border: '1px solid var(--glass-border)'
-                                        }}>+91</span>
-                                        <div style={{ position: 'relative', flex: 1 }}>
-                                            <Phone size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                            <input
-                                                type="tel"
-                                                placeholder="99846 94243"
-                                                value={formData.mobile}
-                                                onChange={e => handleChange('mobile', e.target.value)}
-                                                style={{
-                                                    width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                    borderRadius: 'var(--radius-lg)', border: errors.mobile ? '1px solid red' : '1px solid var(--glass-border)',
-                                                    background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-                                    {errors.mobile && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.mobile}</p>}
-                                </div>
-
-                                {/* City */}
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.city}</label>
-                                    <div style={{ position: 'relative' }}>
-                                        <MapPin size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
-                                        <input
-                                            type="text"
-                                            placeholder="Project Location"
-                                            value={formData.city}
-                                            onChange={e => handleChange('city', e.target.value)}
-                                            style={{
-                                                width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                                borderRadius: 'var(--radius-lg)', border: errors.city ? '1px solid red' : '1px solid var(--glass-border)',
-                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
-                                            }}
-                                        />
-                                    </div>
-                                    {errors.city && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.city}</p>}
-                                </div>
-
-                                {/* Workers Required */}
-                                <div>
-                                    <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '500' }}>{t.workersRequired}</label>
-                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                        {[t.electrician, t.plumber, t.mason, t.painter, t.carpenter].map(skill => (
-                                            <span
-                                                key={skill}
-                                                className="btn-outline"
-                                                style={{
-                                                    padding: '0.4rem 0.8rem', borderRadius: '20px', fontSize: '0.85rem', cursor: 'pointer',
-                                                    background: 'var(--color-bg-tertiary)'
-                                                }}
-                                            >
-                                                {skill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Terms */}
-                                <div
-                                    onClick={() => setFormData(prev => ({ ...prev, agreed: !prev.agreed }))}
-                                    style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', cursor: 'pointer' }}
-                                >
-                                    {formData.agreed ? <CheckSquare color="var(--color-green)" /> : <Square color="var(--color-text-muted)" />}
-                                    <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
-                                        {t.agreeTerms}
-                                    </span>
-                                </div>
-
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary-green"
-                                    style={{ width: '100%', padding: '1rem', marginTop: '1rem', color: 'white' }}
-                                    disabled={!formData.agreed}
-                                >
-                                    {t.sendOtp} <ArrowRight size={20} />
-                                </button>
+                                {errors.companyName && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.companyName}</p>}
                             </div>
-                        ) : step === 2 ? (
-                            <div className="animate-fade-in" style={{ textAlign: 'center', padding: '2rem 0' }}>
-                                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📱</div>
-                                <h3 style={{ marginBottom: '1rem' }}>{t.enterOtp}</h3>
-                                <p style={{ marginBottom: '2rem', color: 'var(--color-text-secondary)' }}>
-                                    {t.otpSentTo} {formData.mobile}
-                                </p>
 
-                                <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', marginBottom: '2rem' }}>
-                                    {otp.map((digit, i) => (
-                                        <input
-                                            key={i}
-                                            id={`otp-${i}`}
-                                            type="text"
-                                            maxLength="1"
-                                            value={digit}
-                                            onChange={(e) => handleOtpChange(i, e.target.value)}
+                            {/* Contact Person */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.contactPerson}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <User size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Your Name"
+                                        value={formData.contactPerson}
+                                        onChange={e => handleChange('contactPerson', e.target.value)}
+                                        style={{
+                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                            borderRadius: 'var(--radius-lg)', border: errors.contactPerson ? '1px solid red' : '1px solid var(--glass-border)',
+                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                        }}
+                                    />
+                                </div>
+                                {errors.contactPerson && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.contactPerson}</p>}
+                            </div>
+
+
+                            {/* City */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>{t.city}</label>
+                                <div style={{ position: 'relative' }}>
+                                    <MapPin size={20} style={{ position: 'absolute', left: '1rem', top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-muted)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Project Location"
+                                        value={formData.city}
+                                        onChange={e => handleChange('city', e.target.value)}
+                                        style={{
+                                            width: '100%', padding: '1rem 1rem 1rem 3rem',
+                                            borderRadius: 'var(--radius-lg)', border: errors.city ? '1px solid red' : '1px solid var(--glass-border)',
+                                            background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                        }}
+                                    />
+                                </div>
+                                {errors.city && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.city}</p>}
+                            </div>
+
+                            {/* Workers Required */}
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '0.8rem', fontWeight: '500' }}>{t.workersRequired}</label>
+                                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                    {['Plumber', 'Electrician', 'Carpenter', 'Painter', 'Mason', 'Welder'].map(skill => (
+                                        <span
+                                            key={skill}
+                                            onClick={() => handleWorkerTypeToggle(skill)}
+                                            className="btn-outline"
                                             style={{
-                                                width: '50px', height: '50px', textAlign: 'center', fontSize: '1.5rem',
-                                                borderRadius: '12px', border: error ? '1px solid red' : '1px solid var(--glass-border)',
-                                                background: 'var(--color-bg-tertiary)', color: 'var(--color-text-primary)'
+                                                padding: '0.6rem 1rem',
+                                                borderRadius: '20px',
+                                                fontSize: '0.9rem',
+                                                cursor: 'pointer',
+                                                border: formData.workersRequired.includes(skill) ? '1px solid var(--color-green)' : '1px solid var(--glass-border)',
+                                                background: formData.workersRequired.includes(skill) ? 'var(--color-green)' : 'var(--color-bg-tertiary)',
+                                                color: formData.workersRequired.includes(skill) ? '#fff' : 'var(--color-text-primary)',
+                                                transition: 'all 0.2s',
+                                                fontWeight: formData.workersRequired.includes(skill) ? '600' : '400'
                                             }}
-                                        />
+                                        >
+                                            {skill}
+                                        </span>
                                     ))}
                                 </div>
-
-                                {error && <p style={{ color: 'red', marginBottom: '1rem', fontSize: '0.9rem' }}>{error}</p>}
-
-                                <button
-                                    type="submit"
-                                    className="btn btn-primary-green"
-                                    style={{ width: '100%', marginBottom: '1rem', color: 'white' }}
-                                >
-                                    {t.verifyComplete}
-                                </button>
-
-                                <p
-                                    onClick={() => {
-                                        setStep(1);
-                                        setOtp(['', '', '', '']);
-                                        setError('');
-                                    }}
-                                    style={{ cursor: 'pointer', color: 'var(--color-text-muted)', fontSize: '0.9rem' }}
-                                >
-                                    {t.changeNumber}
-                                </p>
+                                {errors.workersRequired && <p style={{ color: 'red', fontSize: '0.8rem', marginTop: '0.2rem' }}>{errors.workersRequired}</p>}
                             </div>
-                        ) : (
-                            <RegistrationSuccess />
-                        )}
+
+                            {/* Terms */}
+                            <div
+                                onClick={() => setFormData(prev => ({ ...prev, agreed: !prev.agreed }))}
+                                style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', cursor: 'pointer' }}
+                            >
+                                {formData.agreed ? <CheckSquare color="var(--color-green)" /> : <Square color="var(--color-text-muted)" />}
+                                <span style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+                                    {t.agreeTerms}
+                                </span>
+                            </div>
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary-green"
+                                style={{ width: '100%', padding: '1rem', marginTop: '1rem', color: 'white' }}
+                                disabled={!formData.agreed}
+                            >
+                                {t.registerContractor} <ArrowRight size={20} />
+                            </button>
+                        </div>
+
                     </form>
                 </div>
             </div>

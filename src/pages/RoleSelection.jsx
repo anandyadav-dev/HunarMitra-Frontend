@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Briefcase, HardHat, ChevronRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
@@ -8,6 +8,15 @@ import { translations } from '../utils/translations';
 const RoleSelection = () => {
     const { language } = useLanguage();
     const t = translations[language];
+    const location = useLocation();
+    const navigate = useNavigate();
+    const mobile = location.state?.mobile;
+
+    useEffect(() => {
+        if (!mobile) {
+            navigate('/register');
+        }
+    }, [mobile, navigate]);
 
     return (
         <motion.div
@@ -39,7 +48,7 @@ const RoleSelection = () => {
                     margin: '0 auto'
                 }}>
                     {/* Worker Card */}
-                    <Link to="/register/worker" style={{ textDecoration: 'none' }}>
+                    <Link to="/register/worker" state={{ mobile }} style={{ textDecoration: 'none' }}>
                         <motion.div
                             whileHover={{ y: -8, boxShadow: 'var(--shadow-glow-orange)' }}
                             className="glass-card"
@@ -80,7 +89,7 @@ const RoleSelection = () => {
                     </Link>
 
                     {/* Contractor Card */}
-                    <Link to="/register/contractor" style={{ textDecoration: 'none' }}>
+                    <Link to="/register/contractor" state={{ mobile }} style={{ textDecoration: 'none' }}>
                         <motion.div
                             whileHover={{ y: -8, boxShadow: 'var(--shadow-glow-green)' }}
                             className="glass-card"

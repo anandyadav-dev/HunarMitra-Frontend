@@ -7,13 +7,15 @@ import { LanguageProvider } from './context/LanguageContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
-// Page imports (will create these next)
+// Page imports
 import Home from './pages/Home';
 import RoleSelection from './pages/RoleSelection';
 import WorkerRegistration from './pages/WorkerRegistration';
 import ContractorRegistration from './pages/ContractorRegistration';
 import Contact from './pages/Contact';
 import FAQ from './pages/FAQ';
+import MobileEntry from './pages/MobileEntry';
+import OTPVerification from './pages/OTPVerification';
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -22,6 +24,8 @@ const AnimatedRoutes = () => {
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<Home />} />
+        <Route path="/register" element={<MobileEntry />} />
+        <Route path="/verify-otp" element={<OTPVerification />} />
         <Route path="/role-selection" element={<RoleSelection />} />
         <Route path="/register/worker" element={<WorkerRegistration />} />
         <Route path="/register/contractor" element={<ContractorRegistration />} />

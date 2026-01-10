@@ -100,7 +100,7 @@ const Footer = () => {
                                 </a>
                             </li>
                             <li style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', color: '#9CA3AF', fontSize: '0.9rem' }}>
-                                <span>📍</span> Bangalore, Karnataka, India
+                                <span>📍</span> Lucknow, UP, India
                             </li>
                         </ul>
                     </div>

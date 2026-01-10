@@ -133,7 +133,7 @@ ul {
 
 /* Glass Card */
 .glass-card {
-  padding-top: 45px;
+  /* padding-top: 45px; */
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -279,7 +279,7 @@ ul {
 
 /* Enhanced Glass Card with Hover Glow */
 .glass-card {
-  padding-top: 45px;
+  /* padding-top: 45px; */
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
