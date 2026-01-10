@@ -149,7 +149,7 @@ const Contact = () => {
                                 </div>
                                 <div>
                                     <h3 style={{ fontSize: '1.1rem', marginBottom: '0.25rem' }}>Visit Us</h3>
-                                    <p style={{ color: 'var(--color-text-secondary)' }}>Bangalore, Karnataka, India</p>
+                                    <p style={{ color: 'var(--color-text-secondary)' }}>Lucknow, UP, India</p>
                                 </div>
                             </div>
                         </div>
