@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import { AnimatePresence } from 'framer-motion';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
+import Preloader from './components/Preloader';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -46,19 +47,28 @@ import LocationPrompt from './components/LocationPrompt';
 // ... (imports)
 
 function App() {
+  const [loading, setLoading] = React.useState(true);
+
+  const handlePreloaderFinish = () => {
+    setLoading(false);
+  };
+
   return (
     <ThemeProvider>
       <LanguageProvider>
         <LocationProvider>
           <Router>
-            <ScrollToTop />
-            <LocationPrompt />
-            <div className="app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-              <Header />
-              <main style={{ flex: 1 }}>
-                <AnimatedRoutes />
-              </main>
-              <Footer />
+            {loading && <Preloader onFinish={handlePreloaderFinish} />}
+            <div style={{ opacity: loading ? 0 : 1, transition: 'opacity 0.5s ease-in' }}>
+              <ScrollToTop />
+              <LocationPrompt />
+              <div className="app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+                <Header />
+                <main style={{ flex: 1 }}>
+                  <AnimatedRoutes />
+                </main>
+                <Footer />
+              </div>
             </div>
           </Router>
         </LocationProvider>
