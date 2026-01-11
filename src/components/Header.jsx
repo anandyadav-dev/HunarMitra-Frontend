@@ -50,7 +50,7 @@ const Header = () => {
           <div style={{
             width: '40px',
             height: '40px',
-            background: 'linear-gradient(135deg, var(--color-green) 0%, var(--color-green-dark) 100%)',
+            background: 'linear-gradient(135deg, var(--color-orange) 0%, var(--color-orange-dark) 100%)',
             borderRadius: '8px',
             display: 'flex',
             alignItems: 'center',
@@ -62,7 +62,7 @@ const Header = () => {
             HM
           </div>
           <span style={{ fontSize: '1.5rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'var(--color-text-primary)' }}>
-            Hunar<span style={{ color: 'var(--color-orange)' }}>Mitra</span>
+            Hunar<span style={{ color: 'var(--color-green)' }}>Mitra</span>
           </span>
         </Link>
 
