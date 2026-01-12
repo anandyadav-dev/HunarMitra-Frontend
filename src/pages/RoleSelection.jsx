@@ -11,6 +11,7 @@ const RoleSelection = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const mobile = location.state?.mobile;
+    const showSuccess = location.state?.showSuccess;
 
     useEffect(() => {
         if (!mobile) {
@@ -48,7 +49,7 @@ const RoleSelection = () => {
                     margin: '0 auto'
                 }}>
                     {/* Worker Card */}
-                    <Link to="/register/worker" state={{ mobile }} style={{ textDecoration: 'none' }}>
+                    <Link to="/register/worker" state={{ mobile, showSuccess }} style={{ textDecoration: 'none' }}>
                         <motion.div
                             whileHover={{ y: -8, boxShadow: 'var(--shadow-glow-orange)' }}
                             className="glass-card"
@@ -89,7 +90,7 @@ const RoleSelection = () => {
                     </Link>
 
                     {/* Contractor Card */}
-                    <Link to="/register/contractor" state={{ mobile }} style={{ textDecoration: 'none' }}>
+                    <Link to="/register/contractor" state={{ mobile, showSuccess }} style={{ textDecoration: 'none' }}>
                         <motion.div
                             whileHover={{ y: -8, boxShadow: 'var(--shadow-glow-green)' }}
                             className="glass-card"

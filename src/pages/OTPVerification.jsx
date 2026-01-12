@@ -4,6 +4,7 @@ import { ArrowRight, RotateCcw } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
+import { verifyOTP } from '../api/auth';
 
 const OTPVerification = () => {
     const { language } = useLanguage();
@@ -11,15 +12,18 @@ const OTPVerification = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const mobile = location.state?.mobile;
+    const requestId = location.state?.requestId; // Get requestId from previous step
 
     const [otp, setOtp] = useState(['', '', '', '']);
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (!mobile) {
-            navigate('/register');
+        if (!mobile || !requestId) {
+            // If direct access or missing data, redirect to start
+            navigate('/mobile-entry'); // Changed from /register to match flow
         }
-    }, [mobile, navigate]);
+    }, [mobile, requestId, navigate]);
 
     const handleOtpChange = (index, value) => {
         if (isNaN(value)) return;
@@ -42,13 +46,57 @@ const OTPVerification = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const enteredOtp = otp.join('');
-        if (enteredOtp === '1234') {
-            navigate('/role-selection', { state: { mobile } });
-        } else {
-            setError(t.invalidOtp || (language === 'hi' ? 'गलत ओटीपी' : 'Invalid OTP'));
+
+        if (enteredOtp.length !== 4) {
+            setError(language === 'hi' ? 'कृपया पूरा ओटीपी दर्ज करें' : 'Please enter complete OTP');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+
+        try {
+            const data = await verifyOTP(requestId, enteredOtp);
+            // Store token
+            if (data.access) {
+                localStorage.setItem('authToken', data.access);
+                if (data.refresh) {
+                    localStorage.setItem('refreshToken', data.refresh);
+                }
+
+                // Navigate to Role Selection (or directly to Worker Registration if we hardcoded role 'worker')
+                // Plan said: "Navigate to RoleSelection (or directly to WorkerRegistration if flow allows, but keeping existing flow: Mobile -> OTP -> Role -> Register)."
+
+                // Store user details if available
+                if (data.user) {
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                }
+
+                if (!data.is_new_user) {
+                    // Existing User - Skip Registration Form
+                    const role = data.user.role ? data.user.role.toLowerCase() : '';
+                    if (role === 'contractor') {
+                        navigate('/register/contractor', { state: { mobile, showSuccess: true } });
+                    } else if (role === 'worker') {
+                        navigate('/register/worker', { state: { mobile, showSuccess: true } });
+                    } else {
+                        // Fallback: If role is unknown, let them select, but keep showSuccess flag
+                        navigate('/role-selection', { state: { mobile, showSuccess: true } });
+                    }
+                } else {
+                    // New User - Continue Flow
+                    navigate('/role-selection', { state: { mobile } });
+                }
+            } else {
+                throw new Error('No access token received');
+            }
+        } catch (err) {
+            setError(err.message || (language === 'hi' ? 'गलत ओटीपी' : 'Invalid OTP'));
+        } finally {
+            setLoading(false);
         }
     };
 

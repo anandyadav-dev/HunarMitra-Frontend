@@ -6,6 +6,7 @@ import { translations } from '../utils/translations';
 import { useLocationContext } from '../context/LocationContext';
 import RegistrationSuccess from '../components/RegistrationSuccess';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { registerWorker } from '../api/worker';
 
 const WorkerRegistration = () => {
     const { language } = useLanguage();
@@ -32,7 +33,27 @@ const WorkerRegistration = () => {
         if (!mobile) {
             navigate('/register');
         }
-    }, [mobile, navigate]);
+
+        // Check if we should show success immediately (existing user)
+        if (location.state?.showSuccess) {
+            setIsSuccess(true);
+        }
+
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+            try {
+                const userObj = JSON.parse(storedUser);
+                if (userObj.first_name || userObj.last_name) {
+                    const fullName = `${userObj.first_name || ''} ${userObj.last_name || ''}`.trim();
+                    if (fullName) {
+                        setFormData(prev => ({ ...prev, name: fullName }));
+                    }
+                }
+            } catch (e) {
+                console.error("Failed to parse user object", e);
+            }
+        }
+    }, [mobile, navigate, location.state]);
 
     useEffect(() => {
         if (city && !formData.city) {
@@ -104,31 +125,50 @@ const WorkerRegistration = () => {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
         if (validateForm()) {
+            // Map experience range to integer years (approximate)
+            let experienceYears = 0;
+            if (formData.experience === '0-1') experienceYears = 1;
+            else if (formData.experience === '2-5') experienceYears = 3;
+            else if (formData.experience === '5+') experienceYears = 5;
+
+            // Map jobType to price_type
+            let priceType = 'per_day'; // Default
+            if (formData.jobType === 'Hourly') priceType = 'per_hour'; // If we had hourly
+
             // Prepare Payload for Backend
             const payload = {
-                role: 'worker',
-                name: formData.name,
-                mobile: formData.mobile,
                 skills: formData.skills,
                 city: formData.city,
-                experience: formData.experience,
-                jobType: formData.jobType,
-                aadhaar: formData.aadhaar, // Optional if captured
+                experience_years: experienceYears,
+                bio: `Experience: ${formData.experience}, Job Type: ${formData.jobType}`,
+                price_type: priceType,
+                price_amount: "500.00",
+                price_currency: "INR",
+                min_charge: "200.00",
+                availability_status: "available",
                 latitude: latitude,
                 longitude: longitude,
-                termsAccepted: true,
-                language: language // sending language preference
+                // Name is handled by User model, but we send it just in case logic updates
+                name: formData.name
             };
 
-            // Simulate API call
-            setTimeout(() => {
-                console.log("Worker Registration Payload:", JSON.stringify(payload, null, 2));
+            try {
+                // Ensure we pass mobile if needed, but usually it's from token
+                console.log("Sending Worker Registration Payload:", payload);
+                await registerWorker(payload);
                 setIsSuccess(true);
-            }, 500);
+            } catch (err) {
+                console.error("Registration Error:", err);
+                const errorMsg = err.message || (language === 'hi' ? 'पंजीकरण विफल रहा' : 'Registration Failed');
+                // You might want to map specific field errors to setErrors here if err contains field info
+                // e.g. if (err.skills) setErrors(prev => ({...prev, skills: err.skills[0]}))
+                setErrors(prev => ({ ...prev, form: errorMsg })); // General error
+                alert(errorMsg); // Temporary feedback
+            }
         }
     };
 
@@ -147,7 +187,12 @@ const WorkerRegistration = () => {
                 }}
             >
                 <div className="container" style={{ maxWidth: '600px' }}>
-                    <div className="glass-card" style={{ padding: '3rem', borderTop: '4px solid var(--color-orange)' }}>
+                    <div className="glass-card" style={{
+                        padding: '3rem',
+                        borderTop: '4px solid var(--color-orange)',
+                        background: 'var(--glass-bg)',
+                        color: 'var(--color-text-primary)'
+                    }}>
                         <RegistrationSuccess />
                         <div style={{ textAlign: 'center', marginTop: '1rem', color: 'var(--color-text-secondary)' }}>
                             <p>{t.welcome} {formData.name}!</p>

@@ -42,8 +42,8 @@ export const LocationProvider = ({ children }) => {
         const { latitude, longitude } = position.coords;
         setLocation(prev => ({
             ...prev,
-            latitude,
-            longitude,
+            latitude: parseFloat(latitude.toFixed(6)),
+            longitude: parseFloat(longitude.toFixed(6)),
             error: null,
             loading: false,
             permissionGranted: true

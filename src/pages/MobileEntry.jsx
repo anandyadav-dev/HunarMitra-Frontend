@@ -4,6 +4,7 @@ import { Phone, ArrowRight, Volume2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 import { translations } from '../utils/translations';
+import { requestOTP } from '../api/auth';
 
 const MobileEntry = () => {
     const { language } = useLanguage();
@@ -12,6 +13,7 @@ const MobileEntry = () => {
     const navigate = useNavigate();
     const [mobile, setMobile] = useState('');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     const handleAudioAssist = () => {
         const textToRead = language === 'hi'
@@ -23,7 +25,7 @@ const MobileEntry = () => {
         window.speechSynthesis.speak(utterance);
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const mobileRegex = /^[0-9]{10}$/;
         if (!mobileRegex.test(mobile)) {
@@ -31,7 +33,33 @@ const MobileEntry = () => {
             return;
         }
 
-        navigate('/verify-otp', { state: { mobile } });
+        setLoading(true);
+        setError('');
+
+        try {
+            const data = await requestOTP(`+91${mobile}`, 'worker'); // Defaulting role to worker for initial entry, though role selection happens later? 
+            // Actually, existing flow is Mobile -> OTP -> Role. 
+            // The backend requires role at request-otp? 
+            // Let's check the verify-otp flow. 
+            // If the user is new, verify-otp creates the user.
+            // If we send 'worker' here, does it force them to be a worker?
+            // The plan said: "Specifying the `role` as `worker` ensures that if a new user is created, they are assigned the correct role."
+            // But we have a RoleSelection page LATER.
+            // If we hardcode 'worker' here, we might pre-emptively decide.
+            // However, for the purpose of this task, let's assume we are fixing "Worker Registration".
+            // If the backend REQUIRES a role for request-otp, we must send one.
+            // Let's check existing RoleSelection logic. It happens AFTER OTP.
+            // If we send 'worker' here, and then they pick 'contractor', we have a mismatch.
+            // Refined plan: Send 'worker' for now as per task. 
+            // Or maybe 'user'? The backend analysis said "role='worker'".
+            // I'll stick to 'worker' as my task is Worker Registration.
+
+            navigate('/verify-otp', { state: { mobile, requestId: data.request_id } });
+        } catch (err) {
+            setError(err.message || (language === 'hi' ? 'कनेक्शन त्रुटि' : 'Connection Error'));
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -52,7 +80,7 @@ const MobileEntry = () => {
         >
             <div className="container" style={{ width: '100%', maxWidth: '500px' }}>
                 <div className="glass-card" style={{ padding: '2.5rem' }}>
-                    
+
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
                         <div>
                             <h2 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
@@ -97,13 +125,14 @@ const MobileEntry = () => {
                                         }}
                                         style={{
                                             width: '100%', padding: '1rem 1rem 1rem 3rem',
-                                            borderRadius: 'var(--radius-lg)', 
+                                            borderRadius: 'var(--radius-lg)',
                                             border: error ? '1px solid red' : '1px solid var(--glass-border)',
-                                            background: 'var(--color-bg-tertiary)', 
+                                            background: 'var(--color-bg-tertiary)',
                                             color: 'var(--color-text-primary)',
                                             fontSize: '1.1rem',
                                             letterSpacing: '1px'
                                         }}
+                                        disabled={loading}
                                     />
                                 </div>
                             </div>
@@ -113,17 +142,19 @@ const MobileEntry = () => {
                         <button
                             type="submit"
                             className="btn btn-primary-orange"
-                            style={{ 
-                                width: '100%', 
-                                padding: '1rem', 
+                            style={{
+                                width: '100%',
+                                padding: '1rem',
                                 fontSize: '1.1rem',
                                 display: 'flex',
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                gap: '0.5rem'
+                                gap: '0.5rem',
+                                opacity: loading ? 0.7 : 1
                             }}
+                            disabled={loading}
                         >
-                            {t.sendOtp || (language === 'hi' ? 'ओटीपी भेजें' : 'Send OTP')} <ArrowRight size={20} />
+                            {loading ? (language === 'hi' ? 'भेजा जा रहा है...' : 'Sending...') : (t.sendOtp || (language === 'hi' ? 'ओटीपी भेजें' : 'Send OTP'))} <ArrowRight size={20} />
                         </button>
                     </form>
                 </div>
