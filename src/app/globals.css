@@ -1,26 +1,196 @@
-@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --rust: #A04100;
+  --rust-deep: #5C2000;
+  --orange: #EA5E00;
+  --orange-bright: #FF6B00;
+  --orange-press: #CE5200;
+  --orange-050: #FFF3EB;
+  --orange-100: #FFE1CE;
+  --orange-text: #A8480B;
+  --on-orange: #FFFFFF;
+  --bg: #F6F4F1;
+  --surface: #FFFFFF;
+  --surface-2: #F1EDE8;
+  --surface-3: #FBF8F4;
+  --ink: #1A1510;
+  --ink-2: #6B6560;
+  --ink-3: #9A938C;
+  --line: #EBE6DF;
+  --line-2: #DED7CD;
+  --success: #12A150;
+  --success-bg: #E6F4EC;
+  --success-deep: #0B6B36;
+  --amber: #F59E0B;
+  --info: #0062A1;
+  --error: #C4362F;
+  --error-bg: #FBEBE9;
+  
+  --sh-soft: 0 4px 18px -6px rgba(60,32,10,.10);
+  --sh-card: 0 10px 34px -14px rgba(60,32,10,.16);
+  --sh-lift: 0 18px 46px -18px rgba(60,32,10,.26);
+  --sh-nav: 0 16px 38px -12px rgba(60,32,10,.30);
+  
+  --font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-deva: "Noto Sans Devanagari", "Plus Jakarta Sans", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.dark {
+  --rust: #F2A170;
+    --rust-deep: #160C06;
+    --orange: #FF7A2E;
+    --orange-bright: #FF8A45;
+    --orange-press: #E86A20;
+    --orange-050: #2A1B10;
+    --orange-100: #3A2414;
+    --orange-text: #FFB27E;
+    --on-orange: #241202;
+    --bg: #17120E;
+    --surface: #221C16;
+    --surface-2: #2B241D;
+    --surface-3: #1E1811;
+    --ink: #F3EEE8;
+    --ink-2: #B4ABA1;
+    --ink-3: #7E756B;
+    --line: #33291F;
+    --line-2: #3E3327;
+    --success: #3ECB7E;
+    --success-bg: #12301F;
+    --success-deep: #8EE7B6;
+    --error: #F0897F;
+    --error-bg: #331B18;
+    
+    --sh-soft: 0 4px 18px -6px rgba(0,0,0,.5);
+    --sh-card: 0 12px 34px -14px rgba(0,0,0,.6);
+    --sh-lift: 0 20px 46px -18px rgba(0,0,0,.66);
+    --sh-nav: 0 18px 40px -12px rgba(0,0,0,.7);
+  }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+input, select, textarea {
+  background-color: var(--surface);
+  color: var(--ink) !important;
+  border-color: var(--line);
+}
+
+:focus-visible {
+  outline: 2px solid var(--orange) !important;
+  outline-offset: 2px !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--orange) !important;
+  box-shadow: 0 0 0 1px var(--orange) !important;
+  outline: none !important;
+}
+
+/* Page Transition Fade-In Slide */
+.page-container-fade {
+  animation: pageFadeSlideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes pageFadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Modals/Dialogs animation */
+.fixed.inset-0.z-50 {
+  animation: modalFadeIn 0.2s ease-out forwards;
+}
+
+.fixed.inset-0.z-50 > form,
+.fixed.inset-0.z-50 > div {
+  animation: modalContentSlide 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalContentSlide {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Sidebar Details Panel right slide-in */
+.rounded-xl.border.p-6.shadow-sm > div {
+  animation: detailsSlideIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes detailsSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Table Row Pressing Feedback */
+tbody tr {
+  transition: background-color 0.15s ease-out;
+}
+tbody tr:active {
+  background-color: rgba(243, 244, 246, 0.8) !important;
+}
+
+/* Button & Nav Links Pressed state (subtle micro-interactions) */
+button:active, 
+a:active, 
+[role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* Unified smooth transition for interactables */
+button, 
+a, 
+input, 
+select, 
+textarea, 
+.rounded-xl {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Card hover animation */
+.group.relative.rounded-xl.border:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+/* Respect user preferences for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-delay: 0s !important;
+    animation-duration: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0s !important;
+    scroll-behavior: auto !important;
+    transform: none !important;
+  }
 }
