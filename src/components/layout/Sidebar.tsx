@@ -44,7 +44,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     { name: "Users", href: "/users", icon: Users },
     { name: "Workers", href: "/workers", icon: HardHat },
     { name: "Contractors", href: "/contractors", icon: Building2 },
-    { name: "Services", href: "/services", icon: Layers },
+    { name: "Categories", href: "/services", icon: Layers },
     { name: "Wallets & Earnings", href: "/wallets", icon: Wallet },
     { name: "System Roles", href: "/roles", icon: Shield },
     { name: "Settings", href: "/settings", icon: Settings },

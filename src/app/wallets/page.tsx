@@ -215,7 +215,7 @@ export default function WalletsPage() {
               <table className="w-full text-left text-xs text-gray-500">
                 <thead className="bg-gray-50 text-[10px] text-gray-400 uppercase font-bold border-b border-gray-100">
                   <tr>
-                    <th className="px-6 py-3.5">Wallet / ID</th>
+                    <th className="px-6 py-3.5">Wallet</th>
                     <th className="px-6 py-3.5">Account holder</th>
                     <th className="px-6 py-3.5">Phone</th>
                     <th className="px-6 py-3.5">Role</th>
@@ -228,11 +228,14 @@ export default function WalletsPage() {
                   {wallets.map((w) => (
                     <tr key={w.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-6 py-4">
-                        <p className="font-bold text-gray-900">#W-{w.id}</p>
-                        <span className="text-[10px] text-gray-400 font-medium">User ID: #{w.user_id}</span>
+                        <p className="font-bold text-gray-900">Digital Wallet</p>
                       </td>
-                      <td className="px-6 py-4 font-bold text-gray-700">{w.user?.full_name || "Unregistered"}</td>
-                      <td className="px-6 py-4 font-medium text-gray-600">{w.user?.phone_number}</td>
+                      <td className="px-6 py-4 font-bold text-gray-700">
+                        <div className="truncate max-w-[150px]" title={w.user?.full_name || "Unregistered"}>
+                          {w.user?.full_name || "Unregistered"}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 font-medium text-gray-600 whitespace-nowrap">{w.user?.phone_number}</td>
                       <td className="px-6 py-4">
                         <div className="flex gap-1">
                           {w.user?.roles?.map((r: string) => (

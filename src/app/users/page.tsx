@@ -281,10 +281,9 @@ export default function UsersPage() {
                         onClick={() => handleViewUser(u.id)}
                       >
                         <td className="px-6 py-4">
-                          <p className="font-bold text-gray-900">{u.full_name || "Unregistered"}</p>
-                          <span className="text-[10px] text-gray-400">ID: #{u.id}</span>
+                          <p className="font-bold text-gray-900 truncate max-w-[150px]" title={u.full_name || "Unregistered"}>{u.full_name || "Unregistered"}</p>
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-600">
+                        <td className="px-6 py-4 font-medium text-gray-600 whitespace-nowrap">
                           {u.phone_number}
                         </td>
                         <td className="px-6 py-4">

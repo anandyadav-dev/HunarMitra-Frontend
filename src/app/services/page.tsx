@@ -145,7 +145,7 @@ export default function ServicesPage() {
       {/* Title */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-gray-900">Service Categories Directory</h2>
+          <h2 className="text-xl font-bold tracking-tight text-gray-900">Categories Directory</h2>
           <p className="text-sm text-gray-500 mt-0.5">
             Configure default service listings, set standard base prices, and update icons.
           </p>
@@ -188,7 +188,6 @@ export default function ServicesPage() {
                   <div className="rounded-lg bg-orange-50 p-2 text-orange-600">
                     <Layers className="h-4 w-4" />
                   </div>
-                  <span className="text-[10px] text-gray-400 font-semibold">ID: #{svc.id}</span>
                 </div>
 
                 <div className="pt-2">

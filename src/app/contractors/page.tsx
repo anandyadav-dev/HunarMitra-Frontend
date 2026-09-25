@@ -208,12 +208,11 @@ export default function ContractorsPage() {
                         }`}
                       >
                         <td className="px-6 py-4">
-                          <p className="font-bold text-gray-900">{c.company_name || "Company Not Set"}</p>
-                          <span className="text-[10px] text-gray-400">Partner ID: #{c.id}</span>
+                          <p className="font-bold text-gray-900 truncate max-w-[150px]" title={c.company_name || "Company Not Set"}>{c.company_name || "Company Not Set"}</p>
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-700">
-                          {c.user?.full_name || "Unregistered"} <br />
-                          <span className="text-[10px] text-gray-400 font-normal">{c.user?.phone_number}</span>
+                          <div className="truncate max-w-[150px]" title={c.user?.full_name || "Unregistered"}>{c.user?.full_name || "Unregistered"}</div>
+                          <span className="text-[10px] text-gray-400 font-normal whitespace-nowrap">{c.user?.phone_number}</span>
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{c.gst_number || "None"}</td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{c.pan_number || "None"}</td>

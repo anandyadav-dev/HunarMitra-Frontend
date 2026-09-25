@@ -252,8 +252,8 @@ export default function WorkersPage() {
                         }`}
                       >
                         <td className="px-6 py-4">
-                          <p className="font-bold text-gray-900">{w.user?.full_name || "Unregistered"}</p>
-                          <span className="text-[10px] text-gray-400">ID: #{w.id} • Phone: {w.user?.phone_number}</span>
+                          <p className="font-bold text-gray-900 truncate max-w-[150px]" title={w.user?.full_name || "Unregistered"}>{w.user?.full_name || "Unregistered"}</p>
+                          <span className="text-[10px] text-gray-400 whitespace-nowrap">Phone: {w.user?.phone_number}</span>
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{w.category}</td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{w.experience_years} Years</td>
