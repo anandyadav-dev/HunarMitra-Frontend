@@ -18,6 +18,7 @@ import {
   X,
   Briefcase,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function ContractorsPage() {
   const [contractors, setContractors] = useState<any[]>([]);
@@ -34,15 +35,9 @@ export default function ContractorsPage() {
 
   // Selected Contractor
   const [selectedContractorId, setSelectedContractorId] = useState<number | null>(null);
-  const [selectedContractor, setSelectedContractor] = useState<any | null>(null);
-  const [isDetailLoading, setIsDetailLoading] = useState(false);
 
   const { alert } = useDialog();
-
-  // Rejection Dialog state
-  const [showRejectModal, setShowRejectModal] = useState(false);
-  const [rejectionReason, setRejectionReason] = useState("");
-  const [isVerifying, setIsVerifying] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchContractors();
@@ -74,41 +69,7 @@ export default function ContractorsPage() {
   };
 
   const handleViewContractor = async (id: number) => {
-    setSelectedContractorId(id);
-    setIsDetailLoading(true);
-    try {
-      const data = await api.admin.getContractor(id.toString());
-      setSelectedContractor(data);
-    } catch (err: any) {
-      alert("Error Loading Profile", err.message || "Failed to load contractor profile.");
-      setSelectedContractorId(null);
-    } finally {
-      setIsDetailLoading(false);
-    }
-  };
-
-  const handleVerifyKyc = async (status: "approved" | "rejected") => {
-    if (!selectedContractorId) return;
-
-    if (status === "rejected" && !rejectionReason.trim()) {
-      alert("Input Required", "Please provide a reason for rejecting the contractor registration.");
-      return;
-    }
-
-    setIsVerifying(true);
-    try {
-      await api.admin.verifyContractor(selectedContractorId.toString(), status, status === "rejected" ? rejectionReason : undefined);
-      setShowRejectModal(false);
-      setRejectionReason("");
-      
-      const updated = await api.admin.getContractor(selectedContractorId.toString());
-      setSelectedContractor(updated);
-      fetchContractors();
-    } catch (err: any) {
-      alert("Verification Failed", err.message || "Failed to submit contractor KYC status.");
-    } finally {
-      setIsVerifying(false);
-    }
+    router.push(`/contractors/${id}`);
   };
 
   const totalPages = Math.ceil(total / limit) || 1;
@@ -125,10 +86,10 @@ export default function ContractorsPage() {
       </div>
 
       {/* Main Grid split */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+      <div className="w-full">
         
-        {/* Contractors Table (2/3 width) */}
-        <div className="xl:col-span-2 space-y-4">
+        {/* Contractors Table */}
+        <div className="w-full space-y-4">
           
           {/* Filters Card */}
           <div className="rounded-xl border border-gray-200/80 bg-white p-4 shadow-sm">
@@ -188,7 +149,7 @@ export default function ContractorsPage() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs text-gray-500">
-                  <thead className="bg-gray-50 text-[10px] text-gray-400 uppercase font-bold border-b border-gray-100">
+                  <thead className="bg-gray-50 dark:bg-[#1a2536] text-[10px] text-gray-500 dark:text-[#94A3B8] uppercase font-bold border-b border-gray-100 dark:border-[#ffffff]/5">
                     <tr>
                       <th className="px-6 py-3.5">Company / Partner</th>
                       <th className="px-6 py-3.5">Representative</th>
@@ -274,258 +235,8 @@ export default function ContractorsPage() {
             )}
           </div>
         </div>
-
-        {/* Contractor Details Panel (1/3 width) */}
-        <div className="rounded-xl border border-gray-200/80 bg-white p-6 shadow-sm min-h-[400px]">
-          {!selectedContractorId ? (
-            <div className="h-full flex flex-col items-center justify-center text-center py-20">
-              <div className="rounded-full bg-gray-50 p-3 text-gray-400">
-                <Building2 className="h-6 w-6" />
-              </div>
-              <h3 className="mt-4 text-xs font-bold text-gray-900 uppercase tracking-wider">No Contractor Selected</h3>
-              <p className="mt-1 text-xs text-gray-400 max-w-[200px] leading-relaxed">
-                Click a contractor row in the table to display their verification checks and GST/Licensing documents.
-              </p>
-            </div>
-          ) : isDetailLoading ? (
-            <div className="space-y-6 animate-pulse">
-              <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                  <div className="h-5 w-24 bg-gray-200 rounded" />
-                  <div className="h-3 w-16 bg-gray-200 rounded" />
-                </div>
-                <div className="h-6 w-6 bg-gray-200 rounded" />
-              </div>
-              <div className="h-40 bg-gray-100 rounded" />
-            </div>
-          ) : selectedContractor ? (
-            <div className="space-y-6">
-              
-              {/* Header */}
-              <div className="flex justify-between items-start border-b border-gray-100 pb-4">
-                <div>
-                  <h3 className="text-sm font-bold text-gray-900">{selectedContractor.company_name || "Company Not Set"}</h3>
-                  <p className="text-[10px] text-gray-400 font-semibold mt-0.5">Representative: {selectedContractor.user?.full_name}</p>
-                </div>
-                <button
-                  onClick={() => { setSelectedContractor(null); setSelectedContractorId(null); }}
-                  className="p-1 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-gray-900"
-                >
-                  <X className="h-4.5 w-4.5" />
-                </button>
-              </div>
-
-              {/* Representative Info */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                  <User className="h-4 w-4 text-gray-400" />
-                  Representative Details
-                </h4>
-                <div className="grid grid-cols-2 gap-3 text-xs bg-gray-50 border border-gray-100 rounded-lg p-3">
-                  <div>
-                    <p className="text-gray-400 font-medium">Rep Name</p>
-                    <p className="font-bold text-gray-900">{selectedContractor.user?.full_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 font-medium">Rep Phone</p>
-                    <p className="font-bold text-gray-900">{selectedContractor.user?.phone_number}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 font-medium">Verified State</p>
-                    <p className="font-bold text-gray-900">{selectedContractor.user?.is_verified ? "Verified User" : "Unverified User"}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 font-medium">Joined Date</p>
-                    <p className="font-bold text-gray-900">{new Date(selectedContractor.user?.created_at).toLocaleDateString()}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Company Info */}
-              <div className="space-y-3">
-                <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                  <Briefcase className="h-4 w-4 text-gray-400" />
-                  Company Specs
-                </h4>
-                <div className="grid grid-cols-2 gap-3 text-xs bg-gray-50 border border-gray-100 rounded-lg p-3">
-                  <div>
-                    <p className="text-gray-400 font-medium">City Location</p>
-                    <p className="font-bold text-gray-900">{selectedContractor.city || 'Not specified'}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-400 font-medium">Experience</p>
-                    <p className="font-bold text-gray-900">{selectedContractor.experience_years ? `${selectedContractor.experience_years} Years` : 'Not specified'}</p>
-                  </div>
-                  <div className="col-span-2">
-                    <p className="text-gray-400 font-medium mb-1">Work Types</p>
-                    <div className="flex flex-wrap gap-1">
-                      {selectedContractor.work_types?.length ? (
-                        selectedContractor.work_types.map((type: string) => (
-                          <span key={type} className="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded">{type}</span>
-                        ))
-                      ) : <span className="text-gray-500">None selected</span>}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* KYC Document Checklist */}
-              <div className="space-y-4">
-                <h4 className="text-xs font-bold text-gray-900 flex items-center gap-1.5">
-                  <FileText className="h-4 w-4 text-gray-400" />
-                  Company Credentials KYC Check
-                </h4>
-
-                <div className="space-y-2 text-xs">
-                  <div className="flex justify-between border-b border-gray-50 pb-1">
-                    <span className="text-gray-400 font-medium">GSTIN</span>
-                    <span className="font-bold text-gray-800">{selectedContractor.gst_number || "Not Provided"}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-gray-50 pb-1">
-                    <span className="text-gray-400 font-medium">PAN Card Number</span>
-                    <span className="font-bold text-gray-800">{selectedContractor.pan_number || "Not Provided"}</span>
-                  </div>
-                  <div className="flex justify-between border-b border-gray-50 pb-1">
-                    <span className="text-gray-400 font-medium">KYC verification status</span>
-                    <span className={`font-bold uppercase tracking-wider text-[10px] ${
-                      selectedContractor.kyc_status === "approved"
-                        ? "text-green-600"
-                        : selectedContractor.kyc_status === "rejected"
-                        ? "text-red-600"
-                        : "text-yellow-600"
-                    }`}>
-                      {selectedContractor.kyc_status}
-                    </span>
-                  </div>
-                  {selectedContractor.rejection_reason && (
-                    <div className="p-2.5 rounded bg-red-50 text-red-700 text-[11px] font-semibold border border-red-100 flex items-start gap-1">
-                      <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
-                      <div>
-                        <p className="font-bold">Rejection Reason:</p>
-                        <p className="mt-0.5 font-normal">{selectedContractor.rejection_reason}</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Uploaded Documents Grid */}
-                <div className="space-y-3">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Business Document Scans</p>
-                  <div className="grid grid-cols-2 gap-3">
-                    {/* Logo/Pic */}
-                    <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 text-center p-2">
-                      <p className="text-[10px] font-bold text-gray-500 mb-1">Company logo</p>
-                      {selectedContractor.profile_picture ? (
-                        <div className="h-28 w-full relative flex items-center justify-center overflow-hidden rounded bg-black/5">
-                          <img
-                            src={selectedContractor.profile_picture}
-                            alt="Logo"
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        </div>
-                      ) : (
-                        <div className="h-28 flex items-center justify-center text-gray-400 text-[10px]">No Photo</div>
-                      )}
-                    </div>
-                    {/* Business License */}
-                    <div className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 text-center p-2">
-                      <p className="text-[10px] font-bold text-gray-500 mb-1">Business License</p>
-                      {selectedContractor.business_license ? (
-                        <div className="h-28 w-full relative flex items-center justify-center overflow-hidden rounded bg-black/5">
-                          <img
-                            src={selectedContractor.business_license}
-                            alt="License"
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        </div>
-                      ) : (
-                        <div className="h-28 flex items-center justify-center text-gray-400 text-[10px]">No Scan</div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                {/* KYC Approval Action Buttons */}
-                {selectedContractor.kyc_status === "pending" && (
-                  <div className="pt-2 flex gap-3">
-                    <button
-                      onClick={() => handleVerifyKyc("approved")}
-                      disabled={isVerifying}
-                      className="flex-1 rounded-lg bg-green-600 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-green-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
-                    >
-                      <CheckCircle className="h-4 w-4" />
-                      Approve KYC
-                    </button>
-                    <button
-                      onClick={() => setShowRejectModal(true)}
-                      disabled={isVerifying}
-                      className="flex-1 rounded-lg bg-red-600 py-2.5 text-xs font-semibold text-white shadow-sm hover:bg-red-500 transition-colors disabled:opacity-50 flex items-center justify-center gap-1"
-                    >
-                      <XCircle className="h-4 w-4" />
-                      Reject KYC
-                    </button>
-                  </div>
-                )}
-              </div>
-
-            </div>
-          ) : null}
-        </div>
-
       </div>
-
-      {/* Rejection Modal overlay dialog */}
-      {showRejectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
-          <div className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-6 shadow-lg space-y-4">
-            <div className="flex items-center justify-between border-b border-gray-100 pb-2">
-              <h3 className="text-sm font-bold text-gray-900">Reject Corporate KYC</h3>
-              <button
-                onClick={() => setShowRejectModal(false)}
-                className="p-1 hover:bg-gray-150 rounded-lg text-gray-400 hover:text-gray-900"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            
-            <div className="space-y-1.5">
-              <label htmlFor="reason" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider">
-                Reason for Rejection
-              </label>
-              <textarea
-                id="reason"
-                rows={3}
-                placeholder="e.g. Invalid GSTIN registration, business license expired."
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 p-2.5 text-xs placeholder-gray-400 focus:border-gray-950 focus:outline-none focus:ring-0 transition-colors"
-              />
-              <p className="text-[10px] text-gray-400 leading-normal">
-                Feedback reason will be sent to the contractor profile updates panel.
-              </p>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setShowRejectModal(false)}
-                className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => handleVerifyKyc("rejected")}
-                disabled={isVerifying}
-                className="rounded-lg bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-red-500 disabled:opacity-50"
-              >
-                {isVerifying ? "Rejecting..." : "Submit Rejection"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
+

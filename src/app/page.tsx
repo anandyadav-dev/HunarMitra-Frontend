@@ -196,14 +196,14 @@ export default function OverviewPage() {
         <div className="rounded-xl border border-gray-200/80 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Total Marketplace Users</span>
-            <div className="rounded-lg bg-gray-50 p-2 text-gray-500">
+            <div className="rounded-lg bg-orange-50 p-2 text-orange-600">
               <Users className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-2xl font-bold tracking-tight text-gray-900">{stats?.total_users}</span>
           </div>
-          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
+          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-gray-500 dark:text-[#94A3B8] font-medium">
             <span>Workers: {stats?.total_workers}</span>
             <span>•</span>
             <span>Contractors: {stats?.total_contractors}</span>
@@ -214,15 +214,15 @@ export default function OverviewPage() {
         <div className="rounded-xl border border-gray-200/80 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">KYC Status Checklist</span>
-            <div className="rounded-lg bg-yellow-50 p-2 text-yellow-600">
+            <div className="rounded-lg bg-orange-50 p-2 text-orange-600">
               <HardHat className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
-            <span className={`text-2xl font-bold tracking-tight ${stats?.pending_kycs_count > 0 ? "text-yellow-600" : "text-gray-900"}`}>
+            <span className={`text-2xl font-bold tracking-tight ${stats?.pending_kycs_count > 0 ? "text-orange-600" : "text-gray-900"}`}>
               {stats?.pending_kycs_count}
             </span>
-            <span className="text-xs text-gray-400 font-medium">Pending reviews</span>
+            <span className="text-xs text-gray-500 dark:text-[#94A3B8] font-medium">Pending reviews</span>
           </div>
           <div className="mt-3 flex items-center gap-1">
             <Link href="/workers" className="text-[10px] font-bold text-orange-600 hover:text-orange-500 flex items-center gap-0.5">
@@ -235,15 +235,15 @@ export default function OverviewPage() {
         <div className="rounded-xl border border-gray-200/80 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Ongoing Bookings</span>
-            <div className="rounded-lg bg-blue-50 p-2 text-blue-600">
+            <div className="rounded-lg bg-orange-50 p-2 text-orange-600">
               <Calendar className="h-4 w-4" />
             </div>
           </div>
           <div className="mt-4 flex items-baseline gap-2">
             <span className="text-2xl font-bold tracking-tight text-gray-900">{stats?.active_bookings_count}</span>
-            <span className="text-xs text-gray-400 font-medium">Active jobs</span>
+            <span className="text-xs text-gray-500 dark:text-[#94A3B8] font-medium">Active jobs</span>
           </div>
-          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
+          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-gray-500 dark:text-[#94A3B8] font-medium">
             <span>Total bookings logged: {stats?.total_bookings}</span>
           </div>
         </div>
@@ -252,7 +252,7 @@ export default function OverviewPage() {
         <div className="rounded-xl border border-gray-200/80 bg-white p-5 shadow-sm">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Total Volume Cleared</span>
-            <div className="rounded-lg bg-green-50 p-2 text-green-600">
+            <div className="rounded-lg bg-orange-50 p-2 text-orange-600">
               <DollarSign className="h-4 w-4" />
             </div>
           </div>
@@ -262,7 +262,7 @@ export default function OverviewPage() {
               {stats?.total_revenue.toLocaleString("en-IN", { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
             </span>
           </div>
-          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-gray-400 font-medium">
+          <div className="mt-3 flex items-center gap-1.5 text-[10px] text-gray-500 dark:text-[#94A3B8] font-medium">
             <span>Total Escrows Balance: Rs. {stats?.total_balances.toLocaleString("en-IN")}</span>
           </div>
         </div>
@@ -289,8 +289,8 @@ export default function OverviewPage() {
               <AreaChart data={stats?.revenue_by_date} margin={{ top: 10, right: 5, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#ff6b00" stopOpacity={0.08} />
-                    <stop offset="95%" stopColor="#ff6b00" stopOpacity={0} />
+                    <stop offset="5%" stopColor="#027A7D" stopOpacity={0.08} />
+                    <stop offset="95%" stopColor="#027A7D" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
@@ -315,7 +315,7 @@ export default function OverviewPage() {
                 <Area
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#ff6b00"
+                  stroke="#027A7D"
                   strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
@@ -387,7 +387,7 @@ export default function OverviewPage() {
                     </div>
                     <div className="flex-1">
                       <p className="font-semibold text-gray-800">{act.message}</p>
-                      <span className="text-[10px] text-gray-400 font-medium">
+                      <span className="text-[10px] text-gray-500 dark:text-[#94A3B8] font-medium">
                         {new Date(act.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         {" - "}
                         {new Date(act.timestamp).toLocaleDateString([], { month: "short", day: "numeric" })}
@@ -397,7 +397,7 @@ export default function OverviewPage() {
                 );
               })}
               {stats?.recent_activities?.length === 0 && (
-                <div className="text-center py-6 text-xs text-gray-400 font-medium">
+                <div className="text-center py-6 text-xs text-gray-500 dark:text-[#94A3B8] font-medium">
                   No recent activity logged in the database.
                 </div>
               )}
@@ -431,7 +431,7 @@ export default function OverviewPage() {
               );
             })}
             {stats?.category_performance?.length === 0 && (
-              <div className="text-center py-10 text-xs text-gray-400 font-medium">
+              <div className="text-center py-10 text-xs text-gray-500 dark:text-[#94A3B8] font-medium">
                 No service bookings logged yet.
               </div>
             )}
@@ -442,3 +442,4 @@ export default function OverviewPage() {
     </div>
   );
 }
+

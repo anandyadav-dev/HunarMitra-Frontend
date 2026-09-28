@@ -213,7 +213,7 @@ export default function WalletsPage() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs text-gray-500">
-                <thead className="bg-gray-50 text-[10px] text-gray-400 uppercase font-bold border-b border-gray-100">
+                <thead className="bg-gray-50 dark:bg-[#1a2536] text-[10px] text-gray-500 dark:text-[#94A3B8] uppercase font-bold border-b border-gray-100 dark:border-[#ffffff]/5">
                   <tr>
                     <th className="px-6 py-3.5">Wallet</th>
                     <th className="px-6 py-3.5">Account holder</th>
@@ -314,7 +314,7 @@ export default function WalletsPage() {
             </div>
 
             {/* Wallet Info Header */}
-            <div className="text-xs bg-gray-50 border border-gray-100 rounded-lg p-3 space-y-1">
+            <div className="text-xs bg-gray-50 dark:bg-[#1a2536] border border-gray-100 dark:border-[#ffffff]/5 rounded-lg p-3 space-y-1">
               <p className="font-bold text-gray-700">Account: {selectedWallet.user?.full_name}</p>
               <p className="text-gray-500">Phone: {selectedWallet.user?.phone_number}</p>
               <p className="font-semibold text-gray-800">Current Balance: Rs. {selectedWallet.balance.toLocaleString()}</p>
@@ -426,3 +426,4 @@ export default function WalletsPage() {
     </div>
   );
 }
+

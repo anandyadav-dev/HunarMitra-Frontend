@@ -184,7 +184,7 @@ export default function RolesPage() {
         <div className="rounded-xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-gray-500">
-              <thead className="bg-gray-50 text-[10px] text-gray-400 uppercase font-bold border-b border-gray-100">
+              <thead className="bg-gray-50 dark:bg-[#1a2536] text-[10px] text-gray-500 dark:text-[#94A3B8] uppercase font-bold border-b border-gray-100 dark:border-[#ffffff]/5">
                 <tr>
                   <th className="px-6 py-3.5">ID</th>
                   <th className="px-6 py-3.5">Role Name</th>
@@ -476,3 +476,4 @@ export default function RolesPage() {
     </div>
   );
 }
+

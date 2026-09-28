@@ -52,7 +52,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
   const breadcrumbs = getBreadcrumbs();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white/80 backdrop-blur px-6 shadow-sm shadow-gray-100/10">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 dark:border-[#ffffff]/10 bg-white/80 dark:bg-[#1a2536]/90 backdrop-blur px-6 shadow-sm shadow-gray-100/10 dark:shadow-black/20">
       {/* Left side: Hamburger (mobile) + Breadcrumbs */}
       <div className="flex items-center gap-4">
         <button
@@ -79,11 +79,6 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
       {/* Right side: Search, Status, Profile Info */}
       <div className="flex items-center gap-4">
-        {/* Connection status */}
-        <div className="hidden md:flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-semibold text-green-700 ring-1 ring-inset ring-green-600/10">
-          <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-          Live Connection
-        </div>
 
         {/* Search */}
         <div className="relative hidden sm:block w-48 lg:w-64">

@@ -85,13 +85,13 @@ export default function SettingsPage() {
               
               {/* Endpoint check */}
               <div className="flex flex-col gap-1 border-b border-gray-50 pb-2">
-                <span className="text-gray-400 font-medium">API Base Endpoint</span>
+                <span className="text-gray-500 dark:text-[#94A3B8] font-medium">API Base Endpoint</span>
                 <span className="font-semibold text-gray-800 break-all">{sysStatus?.apiEndpoint}</span>
               </div>
 
               {/* API status check */}
               <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                <span className="text-gray-400 font-medium">FastAPI Backend Status</span>
+                <span className="text-gray-500 dark:text-[#94A3B8] font-medium">FastAPI Backend Status</span>
                 {sysStatus?.status === "online" ? (
                   <span className="inline-flex items-center gap-1 rounded bg-green-50 px-2 py-0.5 font-bold uppercase tracking-wider text-[10px] text-green-700 border border-green-150">
                     <CheckCircle className="h-3.5 w-3.5" />
@@ -107,7 +107,7 @@ export default function SettingsPage() {
 
               {/* DB check */}
               <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                <span className="text-gray-400 font-medium">MySQL DB Connection</span>
+                <span className="text-gray-500 dark:text-[#94A3B8] font-medium">MySQL DB Connection</span>
                 {sysStatus?.dbConnection === "healthy" ? (
                   <span className="inline-flex items-center gap-1 text-green-700 font-semibold">
                     <Database className="h-3.5 w-3.5 text-green-500" />
@@ -123,7 +123,7 @@ export default function SettingsPage() {
 
               {/* Version check */}
               <div className="flex justify-between items-center border-b border-gray-50 pb-2">
-                <span className="text-gray-400 font-medium">API Version</span>
+                <span className="text-gray-500 dark:text-[#94A3B8] font-medium">API Version</span>
                 <span className="font-bold text-gray-800">{sysStatus?.apiVersion}</span>
               </div>
             </div>
@@ -173,3 +173,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { Phone, Lock, ArrowRight, Loader2, ShieldCheck, AlertCircle } from "lucide-react";
+import { Phone, Lock, ArrowRight, Loader2, ShieldCheck, AlertCircle, Sparkles, Activity, BarChart3 } from "lucide-react";
 
 export default function LoginPage() {
   const { sendOtp, verifyOtp } = useAuth();
@@ -27,6 +27,12 @@ export default function LoginPage() {
     }
     return () => clearInterval(interval);
   }, [step, timer]);
+
+  useEffect(() => {
+    if (step === 2 && inputRefs.current[0]) {
+      inputRefs.current[0].focus();
+    }
+  }, [step]);
 
   const handleSendOtp = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -53,12 +59,12 @@ export default function LoginPage() {
     }
   };
 
-  const handleVerifyOtp = async (e?: React.FormEvent) => {
+  const handleVerifyOtp = async (e?: React.FormEvent, directOtp?: string) => {
     if (e) e.preventDefault();
     setError(null);
     
     const cleanedPhone = phoneNumber.trim();
-    const cleanedOtp = otp.trim();
+    const cleanedOtp = (directOtp || otp).trim();
     const otpRegex = /^\d{6}$/;
     
     if (!otpRegex.test(cleanedOtp)) {
@@ -89,6 +95,10 @@ export default function LoginPage() {
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
+
+    if (newOtpString.length === 6) {
+      handleVerifyOtp(undefined, newOtpString);
+    }
   };
 
   const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -108,157 +118,234 @@ export default function LoginPage() {
         if (i < 6) newOtpArray[i] = pastedData[i];
       }
       setOtpArray(newOtpArray);
-      setOtp(newOtpArray.join(""));
+      
+      const newOtpString = newOtpArray.join("");
+      setOtp(newOtpString);
       
       const focusIndex = Math.min(pastedData.length, 5);
       inputRefs.current[focusIndex]?.focus();
+
+      if (newOtpString.length === 6) {
+        handleVerifyOtp(undefined, newOtpString);
+      }
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="w-full max-w-md space-y-8">
-        {/* Logo Header */}
-        <div className="flex flex-col items-center text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-900 text-white font-bold text-2xl shadow-md shadow-gray-900/10">
+    <div className="flex min-h-screen w-full bg-white dark:bg-bg font-sans selection:bg-orange-100 selection:text-orange-900 dark:selection:bg-orange-900 dark:selection:text-orange-100">
+      {/* Left Branding Panel */}
+      <div className="relative hidden w-1/2 overflow-hidden bg-gray-900 lg:flex lg:flex-col lg:justify-center p-14 xl:p-20">
+        {/* Dynamic Premium Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-800 via-orange-600 to-orange-950 opacity-95" />
+        {/* Subtle decorative circles */}
+        <div className="absolute -top-32 -left-32 h-96 w-96 rounded-full bg-orange-400 opacity-20 blur-3xl" />
+        <div className="absolute -bottom-40 -right-40 h-[500px] w-[500px] rounded-full bg-orange-900 opacity-40 blur-3xl" />
+        
+        {/* Logo at Absolute Top Left */}
+        <div className="absolute top-14 left-14 xl:top-20 xl:left-20 z-20 flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white text-orange-600 font-bold text-2xl shadow-xl">
             HM
           </div>
-          <h2 className="mt-6 text-2xl font-bold tracking-tight text-gray-900">
-            Hunar Mitra Operations Panel
-          </h2>
-          <p className="mt-1.5 text-xs font-medium text-gray-500">
-            Access secure marketplace administrative console
-          </p>
+          <span className="text-2xl font-bold tracking-tight text-[#ffffff]">Hunar Mitra</span>
         </div>
+        
+        {/* Centered Main Content & Grid */}
+        <div className="relative z-10 mt-10">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-[#ffffff]/10 px-4 py-1.5 text-sm font-bold backdrop-blur-md border border-[#ffffff]/20 shadow-sm text-[#ffffff]">
+            <Sparkles className="h-4 w-4 text-orange-200" />
+            <span>Operations Panel</span>
+          </div>
+          <h1 className="text-[2.75rem] xl:text-5xl font-extrabold tracking-tight mb-6 leading-[1.1] text-[#ffffff]">
+            Empowering the <br/> workforce of tomorrow.
+          </h1>
+          <p className="text-orange-50/90 text-lg max-w-md font-medium leading-relaxed mb-12">
+            Secure administrative console. Manage bookings, verify partners, and oversee marketplace operations efficiently.
+          </p>
 
-        {/* Card Container */}
-        <div className="bg-white px-8 py-8 border border-gray-200/80 rounded-xl shadow-sm shadow-gray-100/50">
+          {/* Premium Feature Grid */}
+          <div className="grid grid-cols-2 gap-4 max-w-lg">
+            <div className="rounded-2xl bg-[#ffffff]/10 backdrop-blur-md border border-[#ffffff]/10 p-5 shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <ShieldCheck className="h-7 w-7 text-orange-200 mb-3" />
+              <h3 className="text-[#ffffff] font-bold text-sm mb-1">Secure & Encrypted</h3>
+              <p className="text-orange-50/70 text-xs font-medium leading-snug">Bank-grade security for platform operations.</p>
+            </div>
+            <div className="rounded-2xl bg-[#ffffff]/10 backdrop-blur-md border border-[#ffffff]/10 p-5 shadow-lg transition-transform hover:-translate-y-1 duration-300">
+              <BarChart3 className="h-7 w-7 text-orange-200 mb-3" />
+              <h3 className="text-[#ffffff] font-bold text-sm mb-1">Real-time Analytics</h3>
+              <p className="text-orange-50/70 text-xs font-medium leading-snug">Live tracking of all marketplace metrics.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Login Panel */}
+      <div className="flex w-full flex-col justify-center px-6 py-12 lg:w-1/2 lg:px-16 xl:px-24 relative bg-gray-50/30 dark:bg-transparent">
+        <div className="mx-auto w-full max-w-sm lg:max-w-md relative z-10">
           
-          {/* Error Banner */}
-          {error && (
-            <div className="mb-6 rounded-lg bg-red-50 p-3 text-xs font-medium text-red-700 flex items-start gap-2 border border-red-100">
-              <AlertCircle className="h-4 w-4 shrink-0 text-red-500 mt-0.5" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          {step === 1 ? (
-            <form className="space-y-6" onSubmit={handleSendOtp}>
-              {/* Phone Number Input */}
-              <div>
-                <label htmlFor="phone" className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
-                  Administrator Phone Number
-                </label>
-                <div className="relative">
-                  <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <Phone className="h-4 w-4 text-gray-400" />
-                  </div>
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    maxLength={13}
-                    placeholder="+919999999900"
-                    value={phoneNumber}
-                    onChange={(e) => setPhoneNumber(e.target.value)}
-                    className="block w-full rounded-lg border border-gray-200 py-2.5 pl-10 pr-3 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-950 focus:outline-none focus:ring-0 transition-colors"
-                  />
+          <div className="relative bg-white dark:bg-[#ffffff]/5 dark:backdrop-blur-2xl p-8 lg:p-10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] dark:shadow-[0_8px_30px_rgb(0,0,0,0.4)] border border-gray-100 dark:border-[#ffffff]/10 overflow-hidden">
+            {/* Subtle internal gradient for dark mode glass effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#ffffff]/10 to-transparent opacity-0 dark:opacity-100 pointer-events-none" />
+            
+            <div className="relative z-10">
+              
+              {/* Mobile Logo Header */}
+              <div className="flex flex-col items-center text-center lg:hidden mb-8">
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-orange-600 text-[#ffffff] font-bold text-2xl shadow-lg shadow-orange-600/30 mb-4">
+                  HM
                 </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="group relative flex w-full justify-center rounded-lg bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 transition-colors disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    Send OTP
-                    <ArrowRight className="ml-2 h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
-                  </>
-                )}
-              </button>
-            </form>
-          ) : (
-            <div className="space-y-6">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-3">
-                  One Time Password (OTP)
-                </label>
-                <div className="flex gap-2 mb-2">
-                  {otpArray.map((digit, index) => (
-                    <input
-                      key={index}
-                      ref={(el) => { inputRefs.current[index] = el; }}
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      onPaste={handleOtpPaste}
-                      className={`w-full aspect-square rounded-lg border bg-gray-50 text-center text-xl font-bold transition-colors focus:outline-none focus:border-gray-950 focus:ring-0 
-                        ${digit ? 'border-gray-400 text-gray-900' : 'border-gray-200 text-transparent'}`}
-                    />
-                  ))}
-                </div>
-                <div className="flex justify-between items-center text-xs font-medium text-gray-500">
-                  <span>Sent to {phoneNumber}</span>
-                  <div className="flex gap-3">
-                    <button 
-                      type="button" 
-                      onClick={() => {
-                        if (canResend) {
-                          handleSendOtp();
-                        }
-                      }}
-                      className={`${!canResend ? 'opacity-50 cursor-not-allowed' : 'text-gray-700 hover:text-gray-950'} transition-colors`}
-                    >
-                      Resend ({timer}s)
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={() => setStep(1)}
-                      className="text-gray-700 hover:text-gray-950 transition-colors"
-                    >
-                      Change
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => handleVerifyOtp()}
-                disabled={isLoading || otpArray.join("").length !== 6}
-                className="group relative flex w-full justify-center rounded-lg bg-gray-900 px-3 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-gray-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-900 transition-colors disabled:opacity-50"
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    Verify & Authenticate
-                    <ArrowRight className="ml-2 h-4 w-4 text-gray-400 group-hover:text-white transition-colors" />
-                  </>
-                )}
-              </button>
-            </div>
-          )}
-
-          {/* Test Credentials Box */}
-          <div className="mt-8 rounded-lg bg-gray-50 border border-gray-100 p-4">
-            <div className="flex gap-2 items-start">
-              <ShieldCheck className="h-4 w-4 text-orange-600 shrink-0 mt-0.5" />
-              <div>
-                <h4 className="text-xs font-bold text-gray-800">Quick Test Credentials</h4>
-                <p className="mt-1 text-[11px] leading-relaxed text-gray-500">
-                  Phone: <code className="font-semibold text-gray-900">+919999999900</code> <br />
-                  OTP: <code className="font-semibold text-gray-900">123456</code>
+                <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-[#ffffff]">
+                  Hunar Mitra
+                </h2>
+                <p className="mt-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">
+                  Operations Panel
                 </p>
               </div>
+
+              <div className="mb-8 text-center">
+                <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-[#ffffff]">
+                  {step === 1 ? "Welcome back" : "Verify your identity"}
+                </h2>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-500 dark:text-[#94A3B8] font-medium">
+                  {step === 1 ? "Please enter your details to sign in." : "We've sent a secure verification code to your device."}
+                </p>
+              </div>
+
+              {/* Error Banner */}
+              {error && (
+                <div className="mb-8 rounded-xl bg-red-50 dark:bg-red-500/10 p-4 text-sm font-medium text-red-700 dark:text-red-400 flex items-start gap-3 border border-red-100 dark:border-red-500/20 shadow-sm animate-in fade-in slide-in-from-top-2">
+                  <AlertCircle className="h-5 w-5 shrink-0 text-red-500 dark:text-red-400 mt-0.5" />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              {step === 1 ? (
+                <form className="space-y-6" onSubmit={handleSendOtp}>
+                  <div>
+                    <label htmlFor="phone" className="block text-xs font-bold text-gray-700 dark:text-gray-400 uppercase tracking-widest mb-2.5">
+                      Phone Number
+                    </label>
+                    <div className="relative group">
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 transition-colors group-focus-within:text-orange-600 dark:group-focus-within:text-orange-400">
+                        <Phone className="h-5 w-5 text-gray-400 dark:text-gray-500 group-focus-within:text-orange-600 dark:group-focus-within:text-orange-400 transition-colors" />
+                      </div>
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        required
+                        maxLength={13}
+                        placeholder="+919999999900"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="block w-full rounded-2xl border border-gray-200 dark:border-[#ffffff]/10 bg-gray-50/50 dark:bg-[#000000]/20 py-3.5 pl-12 pr-4 text-sm font-medium text-gray-900 dark:text-[#ffffff] placeholder-gray-400 dark:placeholder-gray-600 focus:border-orange-600 dark:focus:border-orange-500 focus:bg-white dark:focus:bg-[#000000]/40 focus:outline-none focus:ring-4 focus:ring-orange-600/10 dark:focus:ring-orange-500/20 transition-all"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="group relative flex w-full justify-center items-center rounded-2xl bg-orange-600 dark:bg-orange-500 px-4 py-3.5 text-sm font-bold text-[#ffffff] shadow-lg shadow-orange-600/25 dark:shadow-orange-900/50 hover:bg-orange-700 dark:hover:bg-orange-400 hover:shadow-orange-600/40 dark:hover:shadow-orange-900/60 focus:outline-none focus:ring-4 focus:ring-orange-600/20 dark:focus:ring-orange-500/30 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none mt-2"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        Continue with Phone
+                        <ArrowRight className="ml-2 h-5 w-5 opacity-70 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                      </>
+                    )}
+                  </button>
+                </form>
+              ) : (
+                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-700 dark:text-gray-400 uppercase tracking-widest mb-4">
+                      Enter Verification Code
+                    </label>
+                    <div className="flex gap-3 mb-4">
+                      {otpArray.map((digit, index) => (
+                        <input
+                          key={index}
+                          ref={(el) => { inputRefs.current[index] = el; }}
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={1}
+                          value={digit}
+                          onChange={(e) => handleOtpChange(index, e.target.value)}
+                          onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                          onPaste={handleOtpPaste}
+                          className={`w-full aspect-square rounded-2xl border-2 bg-gray-50/50 dark:bg-[#000000]/20 text-center text-xl font-extrabold transition-all focus:outline-none focus:border-orange-600 dark:focus:border-orange-500 focus:bg-white dark:focus:bg-[#000000]/40 focus:ring-4 focus:ring-orange-600/10 dark:focus:ring-orange-500/20
+                            ${digit ? 'border-orange-200 dark:border-orange-500/50 text-orange-950 dark:text-[#ffffff]' : 'border-gray-200 dark:border-[#ffffff]/10 text-transparent'}`}
+                        />
+                      ))}
+                    </div>
+                    <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 px-1">
+                      <span>{phoneNumber}</span>
+                      <div className="flex gap-4">
+                        <button 
+                          type="button" 
+                          onClick={() => {
+                            if (canResend) {
+                              handleSendOtp();
+                            }
+                          }}
+                          className={`${!canResend ? 'opacity-40 cursor-not-allowed' : 'text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 hover:underline'} transition-all`}
+                        >
+                          Resend {timer > 0 && `(${timer}s)`}
+                        </button>
+                        <button 
+                          type="button" 
+                          onClick={() => setStep(1)}
+                          className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-[#ffffff] transition-colors"
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleVerifyOtp()}
+                    disabled={isLoading || otpArray.join("").length !== 6}
+                    className="group relative flex w-full justify-center items-center rounded-2xl bg-orange-600 dark:bg-orange-500 px-4 py-3.5 text-sm font-bold text-[#ffffff] shadow-lg shadow-orange-600/25 dark:shadow-orange-900/50 hover:bg-orange-700 dark:hover:bg-orange-400 hover:shadow-orange-600/40 dark:hover:shadow-orange-900/60 focus:outline-none focus:ring-4 focus:ring-orange-600/20 dark:focus:ring-orange-500/30 active:scale-[0.98] transition-all disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <>
+                        Secure Login
+                        <ShieldCheck className="ml-2 h-5 w-5 opacity-70 group-hover:opacity-100 transition-all" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+
+              {/* Test Credentials Box */}
+              <div className="mt-8 rounded-2xl bg-orange-50/50 dark:bg-orange-900/20 border border-orange-100/50 dark:border-orange-500/20 p-5 shadow-sm relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-[#ffffff]/40 dark:from-[#ffffff]/5 to-transparent pointer-events-none" />
+                <div className="relative z-10 flex gap-3 items-start">
+                  <div className="rounded-full bg-orange-100 dark:bg-orange-500/20 p-2">
+                    <ShieldCheck className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-bold text-orange-950 dark:text-[#66C2A6]">Test Credentials</h4>
+                    <div className="mt-2 space-y-1 text-xs font-medium text-orange-900/70 dark:text-[#A8DFD4]">
+                      <div className="flex items-center gap-2">
+                        <span>Phone:</span>
+                        <code className="rounded bg-white dark:bg-[#000000]/40 px-1.5 py-0.5 text-orange-700 dark:text-[#66C2A6] font-bold shadow-sm border border-orange-100/50 dark:border-[#ffffff]/10">+919999999900</code>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span>OTP:</span>
+                        <code className="rounded bg-white dark:bg-[#000000]/40 px-1.5 py-0.5 text-orange-700 dark:text-[#66C2A6] font-bold shadow-sm border border-orange-100/50 dark:border-[#ffffff]/10">123456</code>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
 
@@ -267,3 +354,6 @@ export default function LoginPage() {
     </div>
   );
 }
+
+
+
