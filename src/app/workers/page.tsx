@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { useDialog } from "../../hooks/useDialog";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import StatusConfirmationModal from "../../components/StatusConfirmationModal";
 import {
   Search,
   HardHat,
@@ -17,7 +19,9 @@ import {
   FileText,
   Clock,
   MapPin,
+  Trash2,
   X,
+  Ban,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -37,6 +41,17 @@ export default function WorkersPage() {
 
   // Selected Worker
   const [selectedWorkerId, setSelectedWorkerId] = useState<number | null>(null);
+
+  // Delete Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Status Modal State
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [itemToChangeStatus, setItemToChangeStatus] = useState<any>(null);
+  const [pendingStatus, setPendingStatus] = useState<"suspend" | "activate">("suspend");
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   const { alert } = useDialog();
   const router = useRouter();
@@ -89,9 +104,57 @@ export default function WorkersPage() {
     fetchWorkers();
   };
 
+  const handleDeleteClick = (e: React.MouseEvent, worker: any) => {
+    e.stopPropagation();
+    setItemToDelete(worker);
+    setDeleteModalOpen(true);
+  };
 
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    setIsDeleting(true);
+    try {
+      await api.admin.deleteWorker(itemToDelete.id);
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
+      fetchWorkers();
+    } catch (err: any) {
+      alert("Error", err.message || "Failed to delete worker");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const totalPages = Math.ceil(total / limit) || 1;
+
+  const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>, worker: any) => {
+    e.stopPropagation();
+    const val = e.target.value;
+    
+    setItemToChangeStatus(worker);
+    setPendingStatus(val === "active" ? "activate" : "suspend");
+    setStatusModalOpen(true);
+  };
+
+  const confirmStatusChange = async () => {
+    if (!itemToChangeStatus) return;
+    setIsChangingStatus(true);
+    try {
+      await api.admin.updateWorkerStatus(itemToChangeStatus.id, pendingStatus === "activate");
+      setStatusModalOpen(false);
+      setItemToChangeStatus(null);
+      fetchWorkers();
+    } catch (err: any) {
+      alert("Error", err.message || "Failed to update account status");
+    } finally {
+      setIsChangingStatus(false);
+    }
+  };
+
+  const handleToggleStatus = async (e: React.MouseEvent, worker: any) => {
+    e.stopPropagation();
+    // Replaced by dropdown logic
+  };
 
   // Format Aadhaar number with hyphens (e.g. 1234-5678-9012)
   const formatAadhaar = (aadhaar?: string) => {
@@ -198,6 +261,8 @@ export default function WorkersPage() {
                       <th className="px-6 py-3.5">Hourly Rate</th>
                       <th className="px-6 py-3.5">Rating</th>
                       <th className="px-6 py-3.5">KYC Status</th>
+                      <th className="px-6 py-3.5">Account</th>
+                      <th className="px-6 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -210,8 +275,15 @@ export default function WorkersPage() {
                         }`}
                       >
                         <td className="px-6 py-4">
-                          <p className="font-bold text-gray-900 truncate max-w-[150px]" title={w.user?.full_name || "Unregistered"}>{w.user?.full_name || "Unregistered"}</p>
-                          <span className="text-[10px] text-gray-400 whitespace-nowrap">Phone: {w.user?.phone_number}</span>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+                              {(w.user?.full_name || "U")[0].toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-bold text-gray-900 truncate max-w-[150px]" title={w.user?.full_name || "Unregistered"}>{w.user?.full_name || "Unregistered"}</p>
+                              <span className="text-[10px] text-gray-400 whitespace-nowrap">Phone: {w.user?.phone_number}</span>
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{w.category}</td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{w.experience_years} Years</td>
@@ -236,6 +308,42 @@ export default function WorkersPage() {
                               Pending
                             </span>
                           )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <select
+                            value={w.is_active ? "active" : "suspended"}
+                            onChange={(e) => handleStatusSelect(e, w)}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`px-2 py-1.5 text-xs font-semibold rounded-md border shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors cursor-pointer ${
+                              w.is_active
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 focus:ring-emerald-500"
+                                : "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30 focus:ring-red-500"
+                            }`}
+                          >
+                            <option value="active" className="font-semibold text-emerald-700 dark:text-emerald-400 dark:bg-gray-800">Active</option>
+                            <option value="suspended" className="font-semibold text-red-700 dark:text-red-400 dark:bg-gray-800">Suspended</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/workers/${w.id}`);
+                              }}
+                              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                              title="View Details"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteClick(e, w)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                              title="Delete Worker"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -272,6 +380,29 @@ export default function WorkersPage() {
           </div>
         </div>
       </div>
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
+        title="Delete Worker"
+        description={`Are you sure you want to soft delete worker "${itemToDelete?.user?.full_name || 'Unregistered'}"?`}
+      />
+
+      <StatusConfirmationModal
+        isOpen={statusModalOpen}
+        onClose={() => setStatusModalOpen(false)}
+        onConfirm={confirmStatusChange}
+        isProcessing={isChangingStatus}
+        actionType={pendingStatus}
+        title={pendingStatus === "suspend" ? "Suspend Account" : "Activate Account"}
+        description={
+          pendingStatus === "suspend" 
+            ? "Are you sure you want to suspend this worker's account? They will lose access to the platform until reactivated."
+            : "Are you sure you want to reactivate this worker's account? They will regain access to the platform."
+        }
+      />
     </div>
   );
 }

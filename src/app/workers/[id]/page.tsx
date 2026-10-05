@@ -3,7 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../../services/api";
 import { useDialog } from "../../../hooks/useDialog";
-import { ArrowLeft, User, ShieldCheck, AlertCircle, FileText, CheckCircle, XCircle, Clock, X, MapPin, Briefcase, Star, IndianRupee, Image as ImageIcon } from "lucide-react";
+import { 
+  ArrowLeft, User, ShieldCheck, AlertCircle, FileText, 
+  CheckCircle, X, MapPin, Briefcase, Star, 
+  IndianRupee, Image as ImageIcon, PhoneCall
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function WorkerDetailsPage({ params }: { params: { id: string } }) {
@@ -13,7 +17,6 @@ export default function WorkerDetailsPage({ params }: { params: { id: string } }
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Rejection Dialog state
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
@@ -38,10 +41,7 @@ export default function WorkerDetailsPage({ params }: { params: { id: string } }
     setIsVerifying(true);
     try {
       await api.admin.verifyWorker(worker.id, statusStr, statusStr === "rejected" ? rejectionReason : undefined);
-      alert(
-        "KYC Updated",
-        `Worker KYC status has been updated to ${statusStr}.`
-      );
+      alert("KYC Updated", `Worker KYC status has been updated to ${statusStr}.`);
       setShowRejectModal(false);
       fetchWorkerDetails();
     } catch (err: any) {
@@ -59,7 +59,7 @@ export default function WorkerDetailsPage({ params }: { params: { id: string } }
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
   }
@@ -67,312 +67,275 @@ export default function WorkerDetailsPage({ params }: { params: { id: string } }
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
-        <AlertCircle className="h-12 w-12 text-red-500" />
-        <p className="text-xl font-semibold text-gray-900">{error}</p>
-        <button onClick={() => router.push("/workers")} className="text-indigo-500 hover:underline">Go Back</button>
+        <AlertCircle className="h-10 w-10 text-red-500" />
+        <p className="text-lg font-semibold text-gray-900">{error}</p>
+        <button onClick={() => router.push("/workers")} className="px-4 py-2 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors">Go Back</button>
       </div>
     );
   }
 
-  if (!worker) return <div className="p-8 text-center text-gray-500 mt-20">Worker not found</div>;
+  if (!worker) return <div className="p-8 text-center text-gray-500">Worker not found</div>;
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-12 mt-4">
-      {/* Header Banner */}
-      <div className="relative rounded-3xl overflow-hidden bg-white border border-gray-200 shadow-sm">
-        <div className="h-32 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
-        <div className="px-6 sm:px-10 pb-8 relative">
-          <div className="flex flex-col sm:flex-row gap-6">
-            {/* Avatar */}
-            <div className="-mt-12 sm:-mt-16 h-24 w-24 sm:h-32 sm:w-32 rounded-full border-4 border-white bg-gray-100 flex items-center justify-center overflow-hidden shadow-lg shrink-0 mx-auto sm:mx-0">
-              {worker.profile_picture ? (
-                <img src={worker.profile_picture} alt={worker.user?.full_name} className="h-full w-full object-cover" />
-              ) : (
-                <User className="h-10 w-10 sm:h-12 sm:w-12 text-gray-400" />
-              )}
-            </div>
-            
-            {/* Name & Title */}
-            <div className="flex-1 text-center sm:text-left pt-2 sm:pt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
-                  {worker.user?.full_name || "Unregistered Worker"}
-                </h2>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-50 text-indigo-700 border border-indigo-200 w-fit mx-auto sm:mx-0">
-                  {worker.category}
-                </span>
-              </div>
-              <div className="flex items-center justify-center sm:justify-start gap-4 mt-3 text-sm text-gray-500">
-                <div className="flex items-center gap-1">
-                  <MapPin className="h-4 w-4" />
-                  <span>{worker.city ? `${worker.area_mohalla || ''}, ${worker.city}` : 'Location Not Set'}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Star className="h-4 w-4 text-amber-500" />
-                  <span className="font-semibold text-gray-700">{worker.rating}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Back Button */}
-            <button 
-              onClick={() => router.push("/workers")} 
-              className="absolute top-4 right-4 sm:static sm:mt-4 flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all shadow-sm sm:shadow-none backdrop-blur-md self-start"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Back to Workers</span>
-            </button>
+    <div className="max-w-6xl mx-auto space-y-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => router.push("/workers")}
+            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              Worker Profile
+              {worker.kyc_status === 'approved' && <CheckCircle className="h-4 w-4 text-emerald-500" />}
+            </h1>
+            <p className="text-sm text-gray-500">Detailed view and verification controls</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left Column: Details & Stats */}
-        <div className="lg:col-span-7 space-y-8">
-          
-          {/* Quick Stats Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <div className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center group transition-colors">
-              <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                <IndianRupee className="h-5 w-5 text-emerald-600" />
-              </div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Rate</p>
-              <p className="text-lg font-bold text-gray-900 mt-1">₹{worker.pricing_per_hour}/hr</p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Core Profile */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Profile Card */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col items-center text-center">
+            <div className="h-24 w-24 rounded-full bg-gray-100 border-4 border-white shadow-sm flex items-center justify-center overflow-hidden mb-4 relative">
+              <User className="h-10 w-10 text-gray-400" />
+              {worker.profile_picture && (
+                <img src={worker.profile_picture} alt="Profile" className="absolute inset-0 h-full w-full object-cover" />
+              )}
             </div>
             
-            <div className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center group transition-colors">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                <Briefcase className="h-5 w-5 text-blue-600" />
-              </div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Experience</p>
-              <p className="text-lg font-bold text-gray-900 mt-1">{worker.experience_years} Yrs</p>
+            <h2 className="text-lg font-bold text-gray-900">{worker.user?.full_name || "Unknown User"}</h2>
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 mt-2">
+              {worker.category || "General Worker"}
             </div>
 
-            <div className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center group transition-colors">
-              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                <Clock className="h-5 w-5 text-purple-600" />
+            <div className="w-full border-t border-gray-100 mt-6 pt-5 space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 flex items-center gap-1.5"><PhoneCall className="h-4 w-4"/> Phone</span>
+                <span className="font-medium text-gray-900">{worker.user?.phone_number || "N/A"}</span>
               </div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</p>
-              <p className="text-sm font-bold text-gray-900 mt-1 capitalize leading-tight">
-                {worker.availability_status?.replace('_', ' ')}
-              </p>
-            </div>
-
-            <div className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center group transition-colors">
-              <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                <CheckCircle className="h-5 w-5 text-orange-600" />
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 flex items-center gap-1.5"><MapPin className="h-4 w-4"/> Location</span>
+                <span className="font-medium text-gray-900 truncate max-w-[120px]">{worker.city ? `${worker.area_mohalla || ''}, ${worker.city}` : 'Not Set'}</span>
               </div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Jobs Done</p>
-              <p className="text-lg font-bold text-gray-900 mt-1">{worker.total_jobs_done}</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 flex items-center gap-1.5"><Star className="h-4 w-4"/> Rating</span>
+                <span className="font-bold text-gray-900 flex items-center gap-1">{worker.rating} <span className="text-gray-400 font-normal text-xs">({worker.total_jobs_done} jobs)</span></span>
+              </div>
             </div>
           </div>
 
-          {/* Skills & Bio */}
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-            <div className="border-b border-gray-200 p-5 bg-gray-50">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <FileText className="h-5 w-5 text-indigo-500" />
-                Professional Profile
-              </h3>
+          {/* Professional Details */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="text-sm font-semibold text-gray-900">Professional Info</h3>
             </div>
-            
-            <div className="p-6 space-y-6">
-              {worker.bio && (
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">About</h4>
-                  <p className="text-gray-700 leading-relaxed bg-gray-50 p-4 rounded-xl border border-gray-200 italic">
-                    &quot;{worker.bio}&quot;
-                  </p>
-                </div>
-              )}
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Additional Skills</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {worker.additional_skills?.length ? (
-                      worker.additional_skills.map((skill: string) => (
-                        <span key={skill} className="bg-indigo-50 text-indigo-700 border border-indigo-200 text-sm px-3 py-1.5 rounded-lg font-medium shadow-sm">
-                          {skill}
-                        </span>
-                      ))
-                    ) : <span className="text-gray-400 italic text-sm">No additional skills listed</span>}
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-3 uppercase tracking-wider">Languages</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {worker.languages?.length ? (
-                      worker.languages.map((lang: string) => (
-                        <span key={lang} className="bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm px-3 py-1.5 rounded-lg font-medium shadow-sm">
-                          {lang}
-                        </span>
-                      ))
-                    ) : <span className="text-gray-400 italic text-sm">Not specified</span>}
-                  </div>
-                </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Skills</span>
+                <p className="text-sm text-gray-900">{worker.skills || "No skills listed"}</p>
+              </div>
+              <div>
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Languages</span>
+                <p className="text-sm text-gray-900">{worker.user?.language_preference || "Not specified"}</p>
+              </div>
+              <div>
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Availability</span>
+                <p className="text-sm font-medium text-gray-900 capitalize">{worker.availability_status?.replace('_', ' ') || "Unknown"}</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: KYC & Documents */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
-            <div className="border-b border-gray-200 p-5 bg-gray-50 flex items-center justify-between">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-indigo-500" />
-                KYC Verification
-              </h3>
-              
-              <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                worker.kyc_status === "approved"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : worker.kyc_status === "rejected"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-amber-100 text-amber-700"
-              }`}>
-                {worker.kyc_status}
-              </span>
+        {/* Right Column: Stats & KYC */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Top KPI Cards */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <IndianRupee className="h-4 w-4 text-emerald-600" />
+                <span className="text-xs font-semibold text-gray-500 uppercase">Hourly Rate</span>
+              </div>
+              <p className="text-xl font-bold text-gray-900">₹{worker.pricing_per_hour || 0}</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <Briefcase className="h-4 w-4 text-blue-600" />
+                <span className="text-xs font-semibold text-gray-500 uppercase">Experience</span>
+              </div>
+              <p className="text-xl font-bold text-gray-900">{worker.experience_years || 0} Yrs</p>
+            </div>
+            <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <div className="flex items-center gap-2 mb-2">
+                <CheckCircle className="h-4 w-4 text-orange-600" />
+                <span className="text-xs font-semibold text-gray-500 uppercase">Jobs Done</span>
+              </div>
+              <p className="text-xl font-bold text-gray-900">{worker.total_jobs_done || 0}</p>
+            </div>
+          </div>
+
+          {/* KYC Verification Module */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+            {/* Status Bar */}
+            <div className={`h-1 w-full ${
+              worker.kyc_status === "approved" ? "bg-emerald-500" : 
+              worker.kyc_status === "rejected" ? "bg-red-500" : "bg-amber-400"
+            }`}></div>
+
+            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                  Identity Verification (KYC)
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">Review documents provided by the worker.</p>
+              </div>
+              <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  worker.kyc_status === "approved" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                  worker.kyc_status === "rejected" ? "bg-red-50 text-red-700 border border-red-200" :
+                  "bg-amber-50 text-amber-700 border border-amber-200"
+                }`}>
+                  {worker.kyc_status}
+              </div>
             </div>
 
-            <div className="p-6 flex-1 flex flex-col space-y-6">
-              
-              {/* Aadhaar Details */}
-              <div className="space-y-4">
-                <div>
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Aadhaar Number</p>
-                  <p className="text-xl font-mono font-bold text-gray-900 tracking-widest bg-gray-50 p-3 rounded-xl border border-gray-200 text-center">
-                    {formatAadhaar(worker.aadhaar_number)}
-                  </p>
-                </div>
+            <div className="p-6 space-y-6 flex-1">
+              {/* Aadhaar Section */}
+              <div>
+                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
+                  <FileText className="h-3.5 w-3.5" /> Aadhaar Card Number
+                </h4>
+                {worker.aadhaar_number ? (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 inline-block">
+                    <span className="text-base font-mono font-bold text-gray-800 tracking-wider">
+                      {formatAadhaar(worker.aadhaar_number)}
+                    </span>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 italic">Not Provided</p>
+                )}
               </div>
 
-              {worker.rejection_reason && (
-                <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-bold text-red-800">Rejection Reason</p>
-                    <p className="mt-1 text-sm text-red-700 leading-relaxed">{worker.rejection_reason}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Document Images */}
-              <div className="pt-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Document Evidence</p>
-                <div className="grid grid-cols-2 gap-4">
+              {/* Documents Section */}
+              <div>
+                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3 flex items-center gap-2">
+                  <ImageIcon className="h-3.5 w-3.5" /> Document Scans
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Selfie */}
-                  <div className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden aspect-square flex flex-col items-center justify-center transition-colors">
+                  <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 flex flex-col items-center justify-center min-h-[160px] relative group overflow-hidden">
                     {worker.profile_picture ? (
                       <>
-                        <img src={worker.profile_picture} alt="Selfie" className="absolute inset-0 w-full h-full object-cover z-0" />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center backdrop-blur-sm">
-                          <span className="text-white font-medium text-sm">View Full Image</span>
+                        <img src={worker.profile_picture} alt="Selfie" className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <a href={worker.profile_picture} target="_blank" rel="noreferrer" className="text-xs font-semibold text-white px-3 py-1.5 border border-white/30 rounded-md backdrop-blur-sm hover:bg-white/20">View Full</a>
                         </div>
                       </>
                     ) : (
-                      <div className="flex flex-col items-center text-gray-400">
-                        <ImageIcon className="h-8 w-8 mb-2 opacity-50" />
-                        <span className="text-xs font-medium">No Selfie</span>
+                      <div className="text-center">
+                        <ImageIcon className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                        <p className="text-xs font-medium text-gray-500">No Selfie Uploaded</p>
                       </div>
                     )}
-                    {!worker.profile_picture && <span className="absolute bottom-2 left-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Selfie</span>}
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-md rounded text-[10px] text-white font-semibold">Photo</div>
                   </div>
-                  
-                  {/* Aadhaar Front */}
-                  <div className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden aspect-square flex flex-col items-center justify-center transition-colors">
-                    {worker.aadhaar_image_front ? (
+
+                  {/* ID Document */}
+                  <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 flex flex-col items-center justify-center min-h-[160px] relative group overflow-hidden">
+                    {worker.aadhaar_image_url ? (
                       <>
-                        <img src={worker.aadhaar_image_front} alt="Aadhaar Front" className="absolute inset-0 w-full h-full object-cover z-0" />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center backdrop-blur-sm">
-                          <span className="text-white font-medium text-sm">View Full Image</span>
+                        <img src={worker.aadhaar_image_url} alt="ID Doc" className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <a href={worker.aadhaar_image_url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-white px-3 py-1.5 border border-white/30 rounded-md backdrop-blur-sm hover:bg-white/20">View Full</a>
                         </div>
                       </>
                     ) : (
-                      <div className="flex flex-col items-center text-gray-400">
-                        <FileText className="h-8 w-8 mb-2 opacity-50" />
-                        <span className="text-xs font-medium">No Document</span>
+                      <div className="text-center">
+                        <FileText className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                        <p className="text-xs font-medium text-gray-500">No Document Uploaded</p>
                       </div>
                     )}
-                    {!worker.aadhaar_image_front && <span className="absolute bottom-2 left-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Aadhaar Front</span>}
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-md rounded text-[10px] text-white font-semibold">ID Document</div>
                   </div>
                 </div>
               </div>
-
-              {/* Action Buttons */}
-              {worker.kyc_status === "pending" && (
-                <div className="mt-auto pt-6 flex flex-col sm:flex-row gap-3 border-t border-gray-200">
-                  <button
-                    onClick={() => handleVerifyKyc("approved")}
-                    disabled={isVerifying}
-                    className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    <CheckCircle className="h-5 w-5" />
-                    Approve KYC
-                  </button>
-                  <button
-                    onClick={() => setShowRejectModal(true)}
-                    disabled={isVerifying}
-                    className="flex-1 rounded-xl bg-red-600 hover:bg-red-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    <XCircle className="h-5 w-5" />
-                    Reject KYC
-                  </button>
-                </div>
-              )}
             </div>
+
+            {/* Action Buttons */}
+            {worker.kyc_status === 'pending' && (
+              <div className="p-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                <button
+                  onClick={() => setShowRejectModal(true)}
+                  disabled={isVerifying}
+                  className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={() => handleVerifyKyc("approved")}
+                  disabled={isVerifying}
+                  className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center gap-2 shadow-sm"
+                >
+                  <ShieldCheck className="h-4 w-4" /> Approve KYC
+                </button>
+              </div>
+            )}
+            
+            {worker.kyc_status === 'rejected' && worker.rejection_reason && (
+              <div className="p-4 bg-red-50 border-t border-red-100 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-bold text-red-900">Rejection Reason</h4>
+                  <p className="text-sm text-red-700 mt-1">{worker.rejection_reason}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Reject Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-5">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-red-500" />
-                Reject Verification
-              </h3>
-              <button
-                onClick={() => setShowRejectModal(false)}
-                className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
-              >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900">Reject Verification</h3>
+              <button onClick={() => setShowRejectModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="reason" className="block text-sm font-semibold text-gray-700">
-                Reason for Rejection
-              </label>
-              <textarea
-                id="reason"
-                rows={4}
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Explain why the KYC is being rejected..."
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all resize-none"
-              />
-              <p className="text-xs text-gray-500">This reason will be visible to the worker in their app.</p>
+            <div className="p-5 space-y-4">
+              <p className="text-sm text-gray-500">Please provide a reason for rejecting this worker&apos;s KYC application. This will be shown to the worker.</p>
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">Reason for rejection</label>
+                <textarea
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm p-3 border"
+                  rows={4}
+                  placeholder="E.g. Document image is blurry..."
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  autoFocus
+                />
+              </div>
             </div>
-            
-            <div className="flex gap-3 pt-6">
+            <div className="p-4 bg-gray-50 flex justify-end gap-3">
               <button
                 onClick={() => setShowRejectModal(false)}
-                className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleVerifyKyc("rejected")}
-                disabled={!rejectionReason.trim()}
-                className="flex-1 rounded-xl bg-red-600 py-3 text-sm font-bold text-white hover:bg-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/20"
+                disabled={!rejectionReason.trim() || isVerifying}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
-                Confirm Reject
+                {isVerifying ? "Rejecting..." : "Confirm Rejection"}
               </button>
             </div>
           </div>

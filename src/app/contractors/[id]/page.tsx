@@ -3,31 +3,20 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../../services/api";
 import { useDialog } from "../../../hooks/useDialog";
-import {
-  Building2,
-  CheckCircle,
-  XCircle,
-  AlertCircle,
-  User,
-  FileText,
-  Briefcase,
-  ArrowLeft,
-  Image as ImageIcon,
-  IndianRupee,
-  MapPin,
-  X
+import { 
+  ArrowLeft, Building2, ShieldCheck, AlertCircle, FileText, 
+  CheckCircle, X, MapPin, Briefcase, Star, 
+  Users, Image as ImageIcon, PhoneCall
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function ContractorDetailsPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [selectedContractor, setSelectedContractor] = useState<any | null>(null);
+  const { alert } = useDialog();
+  const [contractor, setContractor] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { alert } = useDialog();
-
-  // Rejection Dialog state
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectionReason, setRejectionReason] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
@@ -39,32 +28,24 @@ export default function ContractorDetailsPage({ params }: { params: { id: string
   const fetchContractorDetails = async () => {
     setIsLoading(true);
     try {
-      const data = await api.admin.getContractor(params.id);
-      setSelectedContractor(data);
+      const res = await api.admin.getContractor(params.id);
+      setContractor(res);
     } catch (err: any) {
-      setError(err.message || "Failed to load contractor profile.");
+      setError(err.message || "Failed to load contractor details.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleVerifyKyc = async (status: "approved" | "rejected") => {
-    if (status === "rejected" && !rejectionReason.trim()) {
-      alert("Input Required", "Please provide a reason for rejecting the contractor registration.");
-      return;
-    }
-
+  const handleVerifyKyc = async (statusStr: "approved" | "rejected") => {
     setIsVerifying(true);
     try {
-      await api.admin.verifyContractor(params.id, status, status === "rejected" ? rejectionReason : undefined);
+      await api.admin.verifyContractor(contractor.id, statusStr, statusStr === "rejected" ? rejectionReason : undefined);
+      alert("KYC Updated", `Contractor KYC status has been updated to ${statusStr}.`);
       setShowRejectModal(false);
-      setRejectionReason("");
-      
-      await fetchContractorDetails();
-      
-      alert("Verification Success", `Contractor KYC status updated to ${status}.`);
+      fetchContractorDetails();
     } catch (err: any) {
-      alert("Verification Failed", err.message || "Failed to submit contractor KYC status.");
+      alert("Error", err.message || "Failed to verify KYC status.");
     } finally {
       setIsVerifying(false);
     }
@@ -73,7 +54,7 @@ export default function ContractorDetailsPage({ params }: { params: { id: string
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
   }
@@ -81,268 +62,246 @@ export default function ContractorDetailsPage({ params }: { params: { id: string
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center space-y-4">
-        <AlertCircle className="h-12 w-12 text-red-500" />
-        <p className="text-xl font-semibold text-gray-900">{error}</p>
-        <button onClick={() => router.push("/contractors")} className="text-emerald-500 hover:underline">Go Back</button>
+        <AlertCircle className="h-10 w-10 text-red-500" />
+        <p className="text-lg font-semibold text-gray-900">{error}</p>
+        <button onClick={() => router.push("/contractors")} className="px-4 py-2 bg-gray-100 rounded-lg font-medium hover:bg-gray-200 transition-colors">Go Back</button>
       </div>
     );
   }
 
-  if (!selectedContractor) return <div className="p-8 text-center text-gray-500 mt-20">Contractor not found</div>;
+  if (!contractor) return <div className="p-8 text-center text-gray-500">Contractor not found</div>;
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto pb-12 mt-4">
-      {/* Header Banner */}
-      <div className="relative rounded-3xl overflow-hidden bg-white border border-gray-200 shadow-sm">
-        <div className="h-32 bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500"></div>
-        <div className="px-6 sm:px-10 pb-8 relative">
-          <div className="flex flex-col sm:flex-row gap-6">
-            {/* Avatar / Logo */}
-            <div className="-mt-12 sm:-mt-16 h-24 w-24 sm:h-32 sm:w-32 rounded-2xl border-4 border-white bg-gray-100 flex items-center justify-center overflow-hidden shadow-lg shrink-0 mx-auto sm:mx-0">
-              {selectedContractor.profile_picture ? (
-                <img src={selectedContractor.profile_picture} alt={selectedContractor.company_name} className="h-full w-full object-cover" />
-              ) : (
-                <Building2 className="h-10 w-10 sm:h-14 sm:w-14 text-gray-400" />
-              )}
-            </div>
-            
-            {/* Name & Title */}
-            <div className="flex-1 text-center sm:text-left pt-2 sm:pt-4">
-              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <h2 className="text-3xl font-extrabold tracking-tight text-gray-900">
-                  {selectedContractor.company_name || "Company Not Set"}
-                </h2>
-                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 w-fit mx-auto sm:mx-0">
-                  Registered Contractor
-                </span>
-              </div>
-              <div className="flex items-center justify-center sm:justify-start gap-4 mt-3 text-sm text-gray-500">
-                <div className="flex items-center gap-1">
-                  <User className="h-4 w-4" />
-                  <span>Rep: <span className="font-semibold text-gray-700">{selectedContractor.user?.full_name}</span></span>
-                </div>
-              </div>
-            </div>
-
-            {/* Back Button */}
-            <button 
-              onClick={() => router.push("/contractors")} 
-              className="absolute top-4 right-4 sm:static sm:mt-4 flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-all shadow-sm sm:shadow-none backdrop-blur-md self-start"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span className="hidden sm:inline font-medium">Back to Contractors</span>
-            </button>
+    <div className="max-w-6xl mx-auto space-y-6 pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => router.push("/contractors")}
+            className="p-2 hover:bg-gray-100 rounded-lg text-gray-500 transition-colors"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              Contractor Profile
+              {contractor.kyc_status === 'approved' && <CheckCircle className="h-4 w-4 text-emerald-500" />}
+            </h1>
+            <p className="text-sm text-gray-500">Detailed view and verification controls</p>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left Column: Details & Stats */}
-        <div className="lg:col-span-7 space-y-8">
-          
-          {/* Quick Stats Cards */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center group transition-colors">
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                <Briefcase className="h-5 w-5 text-blue-600" />
-              </div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Experience</p>
-              <p className="text-lg font-bold text-gray-900 mt-1">{selectedContractor.experience_years || 0} Years</p>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Left Column: Core Profile */}
+        <div className="lg:col-span-4 space-y-6">
+          {/* Profile Card */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-6 flex flex-col items-center text-center">
+            <div className="h-24 w-24 rounded-full bg-gray-100 border-4 border-white shadow-sm flex items-center justify-center overflow-hidden mb-4 relative">
+              <Building2 className="h-10 w-10 text-gray-400" />
+              {contractor.company_logo && (
+                <img src={contractor.company_logo} alt="Company Logo" className="absolute inset-0 h-full w-full object-cover" />
+              )}
             </div>
             
-            <div className="p-5 rounded-2xl bg-white border border-gray-200 shadow-sm flex flex-col items-center justify-center text-center group transition-colors">
-              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                <User className="h-5 w-5 text-purple-600" />
+            <h2 className="text-lg font-bold text-gray-900">{contractor.company_name || contractor.user?.full_name || "Unknown Company"}</h2>
+            <div className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-50 text-purple-700 mt-2">
+              {contractor.specialization || "General Contracting"}
+            </div>
+
+            <div className="w-full border-t border-gray-100 mt-6 pt-5 space-y-3">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 flex items-center gap-1.5"><PhoneCall className="h-4 w-4"/> Phone</span>
+                <span className="font-medium text-gray-900">{contractor.user?.phone_number || "N/A"}</span>
               </div>
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Representative Phone</p>
-              <p className="text-lg font-bold text-gray-900 mt-1">{selectedContractor.user?.phone_number}</p>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 flex items-center gap-1.5"><MapPin className="h-4 w-4"/> Location</span>
+                <span className="font-medium text-gray-900 truncate max-w-[120px]">{contractor.city ? `${contractor.city}` : 'Not Set'}</span>
+              </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-500 flex items-center gap-1.5"><Star className="h-4 w-4"/> Rating</span>
+                <span className="font-bold text-gray-900 flex items-center gap-1">{contractor.rating || "New"}</span>
+              </div>
             </div>
           </div>
 
           {/* Business Details */}
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden">
-            <div className="border-b border-gray-200 p-5 bg-gray-50">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <FileText className="h-5 w-5 text-emerald-500" />
-                Business Profile
-              </h3>
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+            <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 className="text-sm font-semibold text-gray-900">Business Info</h3>
             </div>
-            
-            <div className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">GST Number</h4>
-                  {selectedContractor.gst_number ? (
-                    <p className="text-lg font-mono font-bold text-gray-900 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 inline-block">
-                      {selectedContractor.gst_number}
-                    </p>
-                  ) : (
-                    <p className="text-gray-400 italic">Not Provided</p>
-                  )}
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-gray-500 mb-2 uppercase tracking-wider">PAN Number</h4>
-                  {selectedContractor.pan_number ? (
-                    <p className="text-lg font-mono font-bold text-gray-900 bg-gray-50 px-4 py-2 rounded-xl border border-gray-200 inline-block">
-                      {selectedContractor.pan_number}
-                    </p>
-                  ) : (
-                    <p className="text-gray-400 italic">Not Provided</p>
-                  )}
-                </div>
+            <div className="p-5 space-y-4">
+              <div>
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Company Details</span>
+                <p className="text-sm text-gray-900">{contractor.company_name || "N/A"}</p>
+                <p className="text-sm text-gray-900 mt-1">{contractor.registration_number ? `Reg No: ${contractor.registration_number}` : "No Reg Number"}</p>
+              </div>
+              <div>
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Year Established</span>
+                <p className="text-sm text-gray-900">{contractor.year_established || "Unknown"}</p>
+              </div>
+              <div>
+                <span className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Workers Managed</span>
+                <p className="text-sm font-medium text-gray-900 flex items-center gap-2">
+                  <Users className="h-4 w-4 text-purple-600"/> {contractor.total_workers_managed || 0} Workers
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: KYC & Documents */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="rounded-2xl bg-white border border-gray-200 shadow-sm overflow-hidden flex flex-col h-full">
-            <div className="border-b border-gray-200 p-5 bg-gray-50 flex items-center justify-between">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <Building2 className="h-5 w-5 text-emerald-500" />
-                Business KYC Verification
-              </h3>
-              
-              <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                selectedContractor.kyc_status === "approved"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : selectedContractor.kyc_status === "rejected"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-amber-100 text-amber-700"
-              }`}>
-                {selectedContractor.kyc_status}
-              </span>
+        {/* Right Column: KYC */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* KYC Verification Module */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+            {/* Status Bar */}
+            <div className={`h-1 w-full ${
+              contractor.kyc_status === "approved" ? "bg-emerald-500" : 
+              contractor.kyc_status === "rejected" ? "bg-red-500" : "bg-amber-400"
+            }`}></div>
+
+            <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+                  Business Verification (KYC)
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">Review business documents provided by the contractor.</p>
+              </div>
+              <div className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                  contractor.kyc_status === "approved" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
+                  contractor.kyc_status === "rejected" ? "bg-red-50 text-red-700 border border-red-200" :
+                  "bg-amber-50 text-amber-700 border border-amber-200"
+                }`}>
+                  {contractor.kyc_status}
+              </div>
             </div>
 
-            <div className="p-6 flex-1 flex flex-col space-y-6">
-              
-              {selectedContractor.rejection_reason && (
-                <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-start gap-3">
-                  <AlertCircle className="h-5 w-5 shrink-0 text-red-600 mt-0.5" />
-                  <div>
-                    <p className="text-sm font-bold text-red-800">Rejection Reason</p>
-                    <p className="mt-1 text-sm text-red-700 leading-relaxed">{selectedContractor.rejection_reason}</p>
+            <div className="p-6 space-y-6 flex-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* GST / Tax ID */}
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
+                    <FileText className="h-3.5 w-3.5" /> GST / Registration Number
+                  </h4>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 inline-block w-full">
+                    <span className="text-base font-mono font-bold text-gray-800 tracking-wider">
+                      {contractor.registration_number || "Not Provided"}
+                    </span>
                   </div>
                 </div>
-              )}
 
-              {/* Document Images */}
-              <div className="pt-2">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Business Documents</p>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Business License */}
-                  <div className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden aspect-square flex flex-col items-center justify-center transition-colors">
-                    {selectedContractor.business_license ? (
-                      <>
-                        <img src={selectedContractor.business_license} alt="Business License" className="absolute inset-0 w-full h-full object-cover z-0" />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center backdrop-blur-sm">
-                          <span className="text-white font-medium text-sm">View Document</span>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center text-gray-400">
-                        <FileText className="h-8 w-8 mb-2 opacity-50" />
-                        <span className="text-xs font-medium text-center px-2">No License<br/>Uploaded</span>
-                      </div>
-                    )}
-                    {!selectedContractor.business_license && <span className="absolute bottom-2 left-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">License</span>}
-                  </div>
-
-                  {/* Company Logo/Profile Photo */}
-                  <div className="group relative rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 overflow-hidden aspect-square flex flex-col items-center justify-center transition-colors">
-                    {selectedContractor.profile_picture ? (
-                      <>
-                        <img src={selectedContractor.profile_picture} alt="Company Logo" className="absolute inset-0 w-full h-full object-cover z-0" />
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity z-10 flex items-center justify-center backdrop-blur-sm">
-                          <span className="text-white font-medium text-sm">View Image</span>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center text-gray-400">
-                        <ImageIcon className="h-8 w-8 mb-2 opacity-50" />
-                        <span className="text-xs font-medium text-center px-2">No Company<br/>Logo</span>
-                      </div>
-                    )}
-                    {!selectedContractor.profile_picture && <span className="absolute bottom-2 left-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Logo</span>}
+                {/* Company Type */}
+                <div>
+                  <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 flex items-center gap-2">
+                    <Building2 className="h-3.5 w-3.5" /> Specialization
+                  </h4>
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 inline-block w-full">
+                    <span className="text-base font-bold text-gray-800">
+                      {contractor.specialization || "General"}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              {selectedContractor.kyc_status === "pending" && (
-                <div className="mt-auto pt-6 flex flex-col sm:flex-row gap-3 border-t border-gray-200">
-                  <button
-                    onClick={() => handleVerifyKyc("approved")}
-                    disabled={isVerifying}
-                    className="flex-1 rounded-xl bg-emerald-600 hover:bg-emerald-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-emerald-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    <CheckCircle className="h-5 w-5" />
-                    Approve KYC
-                  </button>
-                  <button
-                    onClick={() => setShowRejectModal(true)}
-                    disabled={isVerifying}
-                    className="flex-1 rounded-xl bg-red-600 hover:bg-red-500 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-500/20 transition-all disabled:opacity-50 flex items-center justify-center gap-2 hover:-translate-y-0.5 active:translate-y-0"
-                  >
-                    <XCircle className="h-5 w-5" />
-                    Reject KYC
-                  </button>
+              {/* Documents Section */}
+              <div>
+                <h4 className="text-xs font-semibold text-gray-500 uppercase mb-3 flex items-center gap-2">
+                  <ImageIcon className="h-3.5 w-3.5" /> Business Documents
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Reg Doc */}
+                  <div className="border border-gray-200 rounded-lg p-3 bg-gray-50 flex flex-col items-center justify-center min-h-[160px] relative group overflow-hidden">
+                    {contractor.registration_doc_url ? (
+                      <>
+                        <img src={contractor.registration_doc_url} alt="Doc" className="absolute inset-0 w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <a href={contractor.registration_doc_url} target="_blank" rel="noreferrer" className="text-xs font-semibold text-white px-3 py-1.5 border border-white/30 rounded-md backdrop-blur-sm hover:bg-white/20">View Full</a>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="text-center">
+                        <FileText className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                        <p className="text-xs font-medium text-gray-500">No Document Uploaded</p>
+                      </div>
+                    )}
+                    <div className="absolute top-2 left-2 px-2 py-0.5 bg-black/50 backdrop-blur-md rounded text-[10px] text-white font-semibold">Registration Doc</div>
+                  </div>
+
                 </div>
-              )}
+              </div>
             </div>
+
+            {/* Action Buttons */}
+            {contractor.kyc_status === 'pending' && (
+              <div className="p-5 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+                <button
+                  onClick={() => setShowRejectModal(true)}
+                  disabled={isVerifying}
+                  className="px-4 py-2 text-sm font-semibold text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                >
+                  Reject
+                </button>
+                <button
+                  onClick={() => handleVerifyKyc("approved")}
+                  disabled={isVerifying}
+                  className="px-4 py-2 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors flex items-center gap-2 shadow-sm"
+                >
+                  <ShieldCheck className="h-4 w-4" /> Approve KYC
+                </button>
+              </div>
+            )}
+            
+            {contractor.kyc_status === 'rejected' && contractor.rejection_reason && (
+              <div className="p-4 bg-red-50 border-t border-red-100 flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                <div>
+                  <h4 className="text-sm font-bold text-red-900">Rejection Reason</h4>
+                  <p className="text-sm text-red-700 mt-1">{contractor.rejection_reason}</p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Reject Modal */}
       {showRejectModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4">
-          <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-5">
-              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5 text-red-500" />
-                Reject Verification
-              </h3>
-              <button
-                onClick={() => setShowRejectModal(false)}
-                className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"
-              >
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden">
+            <div className="p-5 border-b border-gray-100 flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900">Reject Verification</h3>
+              <button onClick={() => setShowRejectModal(false)} className="text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>
             </div>
-            
-            <div className="space-y-2">
-              <label htmlFor="reason" className="block text-sm font-semibold text-gray-700">
-                Reason for Rejection
-              </label>
-              <textarea
-                id="reason"
-                rows={4}
-                value={rejectionReason}
-                onChange={(e) => setRejectionReason(e.target.value)}
-                placeholder="Explain why the KYC is being rejected..."
-                className="w-full rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 outline-none transition-all resize-none"
-              />
-              <p className="text-xs text-gray-500">This reason will be visible to the contractor in their app.</p>
+            <div className="p-5 space-y-4">
+              <p className="text-sm text-gray-500">Please provide a reason for rejecting this contractor&apos;s KYC application.</p>
+              <div>
+                <label className="block text-xs font-semibold text-gray-700 mb-1.5">Reason for rejection</label>
+                <textarea
+                  className="w-full rounded-lg border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm p-3 border"
+                  rows={4}
+                  placeholder="E.g. Document image is blurry..."
+                  value={rejectionReason}
+                  onChange={(e) => setRejectionReason(e.target.value)}
+                  autoFocus
+                />
+              </div>
             </div>
-            
-            <div className="flex gap-3 pt-6">
+            <div className="p-4 bg-gray-50 flex justify-end gap-3">
               <button
                 onClick={() => setShowRejectModal(false)}
-                className="flex-1 rounded-xl border border-gray-200 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                className="px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-200 rounded-lg transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleVerifyKyc("rejected")}
-                disabled={!rejectionReason.trim()}
-                className="flex-1 rounded-xl bg-red-600 py-3 text-sm font-bold text-white hover:bg-red-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-red-500/20"
+                disabled={!rejectionReason.trim() || isVerifying}
+                className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
               >
-                Confirm Reject
+                {isVerifying ? "Rejecting..." : "Confirm Rejection"}
               </button>
             </div>
           </div>

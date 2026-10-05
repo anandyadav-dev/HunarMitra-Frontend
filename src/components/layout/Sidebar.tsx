@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Menu,
   Shield,
+  Trash2,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -41,12 +42,11 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
   const navigation = [
     { name: "Overview", href: "/", icon: LayoutDashboard },
-    { name: "Users", href: "/users", icon: Users },
+    { name: "Customers", href: "/users", icon: Users },
     { name: "Workers", href: "/workers", icon: HardHat },
     { name: "Contractors", href: "/contractors", icon: Building2 },
     { name: "Categories", href: "/services", icon: Layers },
-    { name: "Wallets & Earnings", href: "/wallets", icon: Wallet },
-    { name: "System Roles", href: "/roles", icon: Shield },
+    { name: "Recycle Bin", href: "/trash", icon: Trash2 },
     { name: "Settings", href: "/settings", icon: Settings },
   ];
 

@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { useDialog } from "../../hooks/useDialog";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import StatusConfirmationModal from "../../components/StatusConfirmationModal";
 import {
   Search,
   Building2,
@@ -13,10 +15,12 @@ import {
   ChevronLeft,
   ChevronRight,
   User,
+  Trash2,
   FileText,
   Clock,
   X,
   Briefcase,
+  Ban,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -35,6 +39,17 @@ export default function ContractorsPage() {
 
   // Selected Contractor
   const [selectedContractorId, setSelectedContractorId] = useState<number | null>(null);
+
+  // Delete Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Status Modal State
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [itemToChangeStatus, setItemToChangeStatus] = useState<any>(null);
+  const [pendingStatus, setPendingStatus] = useState<"suspend" | "activate">("suspend");
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   const { alert } = useDialog();
   const router = useRouter();
@@ -68,8 +83,57 @@ export default function ContractorsPage() {
     fetchContractors();
   };
 
+  const handleDeleteClick = (e: React.MouseEvent, contractor: any) => {
+    e.stopPropagation();
+    setItemToDelete(contractor);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    setIsDeleting(true);
+    try {
+      await api.admin.deleteContractor(itemToDelete.id);
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
+      fetchContractors();
+    } catch (err: any) {
+      alert("Error", err.message || "Failed to delete contractor");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const handleViewContractor = async (id: number) => {
     router.push(`/contractors/${id}`);
+  };
+
+  const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>, contractor: any) => {
+    e.stopPropagation();
+    const val = e.target.value;
+    
+    setItemToChangeStatus(contractor);
+    setPendingStatus(val === "active" ? "activate" : "suspend");
+    setStatusModalOpen(true);
+  };
+
+  const confirmStatusChange = async () => {
+    if (!itemToChangeStatus) return;
+    setIsChangingStatus(true);
+    try {
+      await api.admin.updateContractorStatus(itemToChangeStatus.id, pendingStatus === "activate");
+      setStatusModalOpen(false);
+      setItemToChangeStatus(null);
+      fetchContractors();
+    } catch (err: any) {
+      alert("Error", err.message || "Failed to update account status");
+    } finally {
+      setIsChangingStatus(false);
+    }
+  };
+
+  const handleToggleStatus = async (e: React.MouseEvent, contractor: any) => {
+    e.stopPropagation();
   };
 
   const totalPages = Math.ceil(total / limit) || 1;
@@ -156,6 +220,7 @@ export default function ContractorsPage() {
                       <th className="px-6 py-3.5">GST Number</th>
                       <th className="px-6 py-3.5">PAN Card</th>
                       <th className="px-6 py-3.5">KYC Status</th>
+                      <th className="px-6 py-3.5">Account</th>
                       <th className="px-6 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
@@ -169,11 +234,23 @@ export default function ContractorsPage() {
                         }`}
                       >
                         <td className="px-6 py-4">
-                          <p className="font-bold text-gray-900 truncate max-w-[150px]" title={c.company_name || "Company Not Set"}>{c.company_name || "Company Not Set"}</p>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700">
+                              {(c.company_name || "C")[0].toUpperCase()}
+                            </div>
+                            <p className="font-bold text-gray-900 truncate max-w-[150px]" title={c.company_name || "Company Not Set"}>{c.company_name || "Company Not Set"}</p>
+                          </div>
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-700">
-                          <div className="truncate max-w-[150px]" title={c.user?.full_name || "Unregistered"}>{c.user?.full_name || "Unregistered"}</div>
-                          <span className="text-[10px] text-gray-400 font-normal whitespace-nowrap">{c.user?.phone_number}</span>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+                              {(c.user?.full_name || "U")[0].toUpperCase()}
+                            </div>
+                            <div>
+                              <div className="truncate max-w-[150px]" title={c.user?.full_name || "Unregistered"}>{c.user?.full_name || "Unregistered"}</div>
+                              <span className="text-[10px] text-gray-400 font-normal whitespace-nowrap">{c.user?.phone_number}</span>
+                            </div>
+                          </div>
                         </td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{c.gst_number || "None"}</td>
                         <td className="px-6 py-4 font-semibold text-gray-700">{c.pan_number || "None"}</td>
@@ -192,14 +269,41 @@ export default function ContractorsPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={() => handleViewContractor(c.id)}
-                            className="p-1 text-gray-400 hover:text-gray-950 hover:bg-gray-100 rounded"
-                            title="Verify Profile"
+                        <td className="px-6 py-4">
+                          <select
+                            value={c.is_active ? "active" : "suspended"}
+                            onChange={(e) => handleStatusSelect(e, c)}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`px-2 py-1.5 text-xs font-semibold rounded-md border shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors cursor-pointer ${
+                              c.is_active
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 focus:ring-emerald-500"
+                                : "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30 focus:ring-red-500"
+                            }`}
                           >
-                            <Eye className="h-4.5 w-4.5" />
-                          </button>
+                            <option value="active" className="font-semibold text-emerald-700 dark:text-emerald-400 dark:bg-gray-800">Active</option>
+                            <option value="suspended" className="font-semibold text-red-700 dark:text-red-400 dark:bg-gray-800">Suspended</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewContractor(c.id);
+                              }}
+                              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                              title="View Details"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteClick(e, c)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                              title="Delete Contractor"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -236,6 +340,29 @@ export default function ContractorsPage() {
           </div>
         </div>
       </div>
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
+        title="Delete Contractor"
+        description={`Are you sure you want to soft delete contractor "${itemToDelete?.company_name || itemToDelete?.user?.full_name || 'Unregistered'}"?`}
+      />
+
+      <StatusConfirmationModal
+        isOpen={statusModalOpen}
+        onClose={() => setStatusModalOpen(false)}
+        onConfirm={confirmStatusChange}
+        isProcessing={isChangingStatus}
+        actionType={pendingStatus}
+        title={pendingStatus === "suspend" ? "Suspend Account" : "Activate Account"}
+        description={
+          pendingStatus === "suspend" 
+            ? "Are you sure you want to suspend this contractor's account? They will lose access to the platform until reactivated."
+            : "Are you sure you want to reactivate this contractor's account? They will regain access to the platform."
+        }
+      />
     </div>
   );
 }

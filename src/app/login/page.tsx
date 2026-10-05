@@ -38,11 +38,11 @@ export default function LoginPage() {
     if (e) e.preventDefault();
     setError(null);
     
-    const cleanedPhone = phoneNumber.trim();
+    const cleanedPhone = `+91${phoneNumber.trim()}`;
     const phoneRegex = /^\+91\d{10}$/;
     
     if (!phoneRegex.test(cleanedPhone)) {
-      setError("Please enter a valid 10-digit phone number starting with +91.");
+      setError("Please enter a valid 10-digit phone number.");
       return;
     }
     
@@ -63,7 +63,7 @@ export default function LoginPage() {
     if (e) e.preventDefault();
     setError(null);
     
-    const cleanedPhone = phoneNumber.trim();
+    const cleanedPhone = `+91${phoneNumber.trim()}`;
     const cleanedOtp = (directOtp || otp).trim();
     const otpRegex = /^\d{6}$/;
     
@@ -225,19 +225,32 @@ export default function LoginPage() {
                       Phone Number
                     </label>
                     <div className="relative group">
-                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 transition-colors group-focus-within:text-orange-600 dark:group-focus-within:text-orange-400">
-                        <Phone className="h-5 w-5 text-gray-400 dark:text-gray-500 group-focus-within:text-orange-600 dark:group-focus-within:text-orange-400 transition-colors" />
+                      <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 gap-2 transition-colors group-focus-within:text-orange-600 dark:group-focus-within:text-orange-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 225 150" className="w-6 h-4 rounded-sm shadow-sm object-cover">
+                          <rect width="225" height="150" fill="#FF9933"/>
+                          <rect width="225" height="50" y="50" fill="#FFFFFF"/>
+                          <rect width="225" height="50" y="100" fill="#138808"/>
+                          <circle cx="112.5" cy="75" r="20" fill="#000080"/>
+                          <circle cx="112.5" cy="75" r="16" fill="#FFFFFF"/>
+                          <circle cx="112.5" cy="75" r="4" fill="#000080"/>
+                          <path d="M112.5,55 L112.5,95 M92.5,75 L132.5,75 M98.3,60.8 L126.7,89.2 M98.3,89.2 L126.7,60.8" stroke="#000080" strokeWidth="2"/>
+                        </svg>
+                        <span className="text-sm font-bold text-gray-900 dark:text-[#E2E8F0] group-focus-within:text-orange-600 dark:group-focus-within:text-orange-400 transition-colors">+91</span>
+                        <svg className="h-3 w-3 text-gray-600 dark:text-[#94A3B8]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                        <div className="h-4 w-px bg-gray-300 dark:bg-gray-600 ml-1"></div>
                       </div>
                       <input
                         id="phone"
                         name="phone"
                         type="tel"
                         required
-                        maxLength={13}
-                        placeholder="+919999999900"
+                        maxLength={10}
+                        placeholder="Enter Your Phone Number"
                         value={phoneNumber}
-                        onChange={(e) => setPhoneNumber(e.target.value)}
-                        className="block w-full rounded-2xl border border-gray-200 dark:border-[#ffffff]/10 bg-gray-50/50 dark:bg-[#000000]/20 py-3.5 pl-12 pr-4 text-sm font-medium text-gray-900 dark:text-[#ffffff] placeholder-gray-400 dark:placeholder-gray-600 focus:border-orange-600 dark:focus:border-orange-500 focus:bg-white dark:focus:bg-[#000000]/40 focus:outline-none focus:ring-4 focus:ring-orange-600/10 dark:focus:ring-orange-500/20 transition-all"
+                        onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))}
+                        className="block w-full rounded-2xl border border-gray-200 dark:border-[#ffffff]/10 bg-gray-50/50 dark:bg-[#000000]/20 py-3.5 pl-[7.5rem] pr-4 text-sm font-medium text-gray-900 dark:text-[#ffffff] placeholder-gray-500 dark:placeholder-gray-400 focus:border-orange-600 dark:focus:border-orange-500 focus:bg-white dark:focus:bg-[#000000]/40 focus:outline-none focus:ring-4 focus:ring-orange-600/10 dark:focus:ring-orange-500/20 transition-all"
                       />
                     </div>
                   </div>
@@ -281,7 +294,7 @@ export default function LoginPage() {
                       ))}
                     </div>
                     <div className="flex justify-between items-center text-xs font-semibold text-gray-500 dark:text-gray-400 px-1">
-                      <span>{phoneNumber}</span>
+                      <span>+91 {phoneNumber}</span>
                       <div className="flex gap-4">
                         <button 
                           type="button" 
@@ -335,7 +348,7 @@ export default function LoginPage() {
                     <div className="mt-2 space-y-1 text-xs font-medium text-orange-900/70 dark:text-[#A8DFD4]">
                       <div className="flex items-center gap-2">
                         <span>Phone:</span>
-                        <code className="rounded bg-white dark:bg-[#000000]/40 px-1.5 py-0.5 text-orange-700 dark:text-[#66C2A6] font-bold shadow-sm border border-orange-100/50 dark:border-[#ffffff]/10">+919999999900</code>
+                        <code className="rounded bg-white dark:bg-[#000000]/40 px-1.5 py-0.5 text-orange-700 dark:text-[#66C2A6] font-bold shadow-sm border border-orange-100/50 dark:border-[#ffffff]/10">9999999900</code>
                       </div>
                       <div className="flex items-center gap-2">
                         <span>OTP:</span>

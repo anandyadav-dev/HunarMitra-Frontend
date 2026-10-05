@@ -120,13 +120,14 @@ export const api = {
     getStats: () => apiFetch<any>("/admin/dashboard-stats"),
 
     // Users
-    getUsers: (params: { skip?: number; limit?: number; role?: string; search?: string; is_verified?: boolean }) => {
+    getUsers: (params: { skip?: number; limit?: number; role?: string; search?: string; is_verified?: boolean; is_deleted?: boolean }) => {
       const query = new URLSearchParams();
       if (params.skip !== undefined) query.set("skip", params.skip.toString());
       if (params.limit !== undefined) query.set("limit", params.limit.toString());
       if (params.role) query.set("role", params.role);
       if (params.search) query.set("search", params.search);
       if (params.is_verified !== undefined) query.set("is_verified", params.is_verified.toString());
+      if (params.is_deleted !== undefined) query.set("is_deleted", params.is_deleted.toString());
       return apiFetch<{ total: number; items: any[] }>(`/admin/users?${query.toString()}`);
     },
     getUser: (id: number | string) => apiFetch<any>(`/admin/users/${id}`),
@@ -135,7 +136,14 @@ export const api = {
         method: "PUT",
         body: JSON.stringify(data),
       }),
+    updateUserStatus: (id: number | string, is_active: boolean) =>
+      apiFetch<any>(`/admin/users/${id}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ is_active }),
+      }),
     deleteUser: (id: number | string) => apiFetch<any>(`/admin/users/${id}`, { method: "DELETE" }),
+    deleteUserPermanent: (id: number | string) => apiFetch<any>(`/admin/users/${id}/permanent`, { method: "DELETE" }),
+    restoreUser: (id: number | string) => apiFetch<any>(`/admin/users/${id}/restore`, { method: "PUT" }),
     assignUserRole: (id: number | string, roleName: string, parentRoleName?: string) =>
       apiFetch<any>(`/admin/users/${id}/roles`, {
         method: "POST",
@@ -164,13 +172,14 @@ export const api = {
       }),
 
     // Workers
-    getWorkers: (params: { skip?: number; limit?: number; kyc_status?: string; category?: string; search?: string }) => {
+    getWorkers: (params: { skip?: number; limit?: number; kyc_status?: string; category?: string; search?: string; is_deleted?: boolean }) => {
       const query = new URLSearchParams();
       if (params.skip !== undefined) query.set("skip", params.skip.toString());
       if (params.limit !== undefined) query.set("limit", params.limit.toString());
       if (params.kyc_status) query.set("kyc_status", params.kyc_status);
       if (params.category) query.set("category", params.category);
       if (params.search) query.set("search", params.search);
+      if (params.is_deleted !== undefined) query.set("is_deleted", params.is_deleted.toString());
       return apiFetch<{ total: number; items: any[] }>(`/admin/workers?${query.toString()}`);
     },
     getWorker: (id: number | string) => apiFetch<any>(`/admin/workers/${id}`),
@@ -179,14 +188,23 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ status, rejection_reason: rejectionReason }),
       }),
+    updateWorkerStatus: (id: number | string, is_active: boolean) =>
+      apiFetch<any>(`/admin/workers/${id}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ is_active }),
+      }),
+    deleteWorker: (id: number | string) => apiFetch<any>(`/admin/workers/${id}`, { method: "DELETE" }),
+    deleteWorkerPermanent: (id: number | string) => apiFetch<any>(`/admin/workers/${id}/permanent`, { method: "DELETE" }),
+    restoreWorker: (id: number | string) => apiFetch<any>(`/admin/workers/${id}/restore`, { method: "PUT" }),
 
     // Contractors
-    getContractors: (params: { skip?: number; limit?: number; kyc_status?: string; search?: string }) => {
+    getContractors: (params: { skip?: number; limit?: number; kyc_status?: string; search?: string; is_deleted?: boolean }) => {
       const query = new URLSearchParams();
       if (params.skip !== undefined) query.set("skip", params.skip.toString());
       if (params.limit !== undefined) query.set("limit", params.limit.toString());
       if (params.kyc_status) query.set("kyc_status", params.kyc_status);
       if (params.search) query.set("search", params.search);
+      if (params.is_deleted !== undefined) query.set("is_deleted", params.is_deleted.toString());
       return apiFetch<{ total: number; items: any[] }>(`/admin/contractors?${query.toString()}`);
     },
     getContractor: (id: number | string) => apiFetch<any>(`/admin/contractors/${id}`),
@@ -195,6 +213,14 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ status, rejection_reason: rejectionReason }),
       }),
+    updateContractorStatus: (id: number | string, is_active: boolean) =>
+      apiFetch<any>(`/admin/contractors/${id}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ is_active }),
+      }),
+    deleteContractor: (id: number | string) => apiFetch<any>(`/admin/contractors/${id}`, { method: "DELETE" }),
+    deleteContractorPermanent: (id: number | string) => apiFetch<any>(`/admin/contractors/${id}/permanent`, { method: "DELETE" }),
+    restoreContractor: (id: number | string) => apiFetch<any>(`/admin/contractors/${id}/restore`, { method: "PUT" }),
 
     // Bookings
     getBookings: (params: { skip?: number; limit?: number; status?: string; search?: string }) => {

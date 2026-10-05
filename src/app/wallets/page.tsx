@@ -231,8 +231,13 @@ export default function WalletsPage() {
                         <p className="font-bold text-gray-900">Digital Wallet</p>
                       </td>
                       <td className="px-6 py-4 font-bold text-gray-700">
-                        <div className="truncate max-w-[150px]" title={w.user?.full_name || "Unregistered"}>
-                          {w.user?.full_name || "Unregistered"}
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+                            {(w.user?.full_name || "U")[0].toUpperCase()}
+                          </div>
+                          <div className="truncate max-w-[150px]" title={w.user?.full_name || "Unregistered"}>
+                            {w.user?.full_name || "Unregistered"}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 font-medium text-gray-600 whitespace-nowrap">{w.user?.phone_number}</td>

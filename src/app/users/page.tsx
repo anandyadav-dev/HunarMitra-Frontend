@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { useDialog } from "../../hooks/useDialog";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
+import StatusConfirmationModal from "../../components/StatusConfirmationModal";
 import {
   Search,
   Filter,
@@ -16,9 +18,10 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
-  Shield,
   HardHat,
   Building2,
+  Ban,
+  CheckCircle,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -38,6 +41,17 @@ export default function UsersPage() {
 
   // Selected User Detail Pane
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  // Delete Modal State
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Status Modal State
+  const [statusModalOpen, setStatusModalOpen] = useState(false);
+  const [itemToChangeStatus, setItemToChangeStatus] = useState<any>(null);
+  const [pendingStatus, setPendingStatus] = useState<"suspend" | "activate">("suspend");
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
 
   const { alert, confirm } = useDialog();
   const router = useRouter();
@@ -73,8 +87,57 @@ export default function UsersPage() {
     fetchUsers();
   };
 
+  const handleDeleteClick = (e: React.MouseEvent, user: any) => {
+    e.stopPropagation();
+    setItemToDelete(user);
+    setDeleteModalOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!itemToDelete) return;
+    setIsDeleting(true);
+    try {
+      await api.admin.deleteUser(itemToDelete.id);
+      setDeleteModalOpen(false);
+      setItemToDelete(null);
+      fetchUsers();
+    } catch (err: any) {
+      alert("Error", err.message || "Failed to delete user");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   const handleViewUser = async (id: number) => {
     router.push(`/users/${id}`);
+  };
+
+  const handleStatusSelect = (e: React.ChangeEvent<HTMLSelectElement>, user: any) => {
+    e.stopPropagation();
+    const val = e.target.value;
+    
+    setItemToChangeStatus(user);
+    setPendingStatus(val === "active" ? "activate" : "suspend");
+    setStatusModalOpen(true);
+  };
+
+  const confirmStatusChange = async () => {
+    if (!itemToChangeStatus) return;
+    setIsChangingStatus(true);
+    try {
+      await api.admin.updateUserStatus(itemToChangeStatus.id, pendingStatus === "activate");
+      setStatusModalOpen(false);
+      setItemToChangeStatus(null);
+      fetchUsers();
+    } catch (err: any) {
+      alert("Error", err.message || "Failed to update account status");
+    } finally {
+      setIsChangingStatus(false);
+    }
+  };
+
+  const handleToggleStatus = async (e: React.MouseEvent, user: any) => {
+    e.stopPropagation();
   };
 
   const totalPages = Math.ceil(total / limit) || 1;
@@ -84,7 +147,7 @@ export default function UsersPage() {
       
       {/* Title */}
       <div>
-        <h2 className="text-xl font-bold tracking-tight text-gray-900">Users Registry</h2>
+        <h2 className="text-xl font-bold tracking-tight text-gray-900">Customers Registry</h2>
         <p className="text-sm text-gray-500 mt-0.5">
           Oversee platform accounts, view booking history, and adjust wallet balances.
         </p>
@@ -146,7 +209,7 @@ export default function UsersPage() {
             </form>
           </div>
 
-          {/* Users Table */}
+          {/* Customers Table */}
           <div className="rounded-xl border border-gray-200/80 bg-white shadow-sm overflow-hidden">
             {isLoading ? (
               <div className="p-8 space-y-4">
@@ -172,7 +235,8 @@ export default function UsersPage() {
                       <th className="px-6 py-3.5">Contact</th>
                       <th className="px-6 py-3.5">Roles</th>
                       <th className="px-6 py-3.5">Status</th>
-                      <th className="px-6 py-3.5">Wallet</th>
+                      <th className="px-6 py-3.5">Account</th>
+                      <th className="px-6 py-3.5 text-right">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
@@ -185,7 +249,12 @@ export default function UsersPage() {
                         onClick={() => router.push(`/users/${u.id}`)}
                       >
                         <td className="px-6 py-4">
-                          <p className="font-bold text-gray-900 truncate max-w-[150px]" title={u.full_name || "Unregistered"}>{u.full_name || "Unregistered"}</p>
+                          <div className="flex items-center gap-3">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-bold text-indigo-700">
+                              {(u.full_name || "U")[0].toUpperCase()}
+                            </div>
+                            <p className="font-bold text-gray-900 truncate max-w-[150px]" title={u.full_name || "Unregistered"}>{u.full_name || "Unregistered"}</p>
+                          </div>
                         </td>
                         <td className="px-6 py-4 font-medium text-gray-600 whitespace-nowrap">
                           {u.phone_number}
@@ -224,8 +293,41 @@ export default function UsersPage() {
                             </span>
                           )}
                         </td>
-                        <td className="px-6 py-4 font-bold text-gray-900">
-                          Rs. {u.wallet_balance.toLocaleString("en-IN", { minimumFractionDigits: 2 })}
+                        <td className="px-6 py-4">
+                          <select
+                            value={u.is_active ? "active" : "suspended"}
+                            onChange={(e) => handleStatusSelect(e, u)}
+                            onClick={(e) => e.stopPropagation()}
+                            className={`px-2 py-1.5 text-xs font-semibold rounded-md border shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 transition-colors cursor-pointer ${
+                              u.is_active
+                                ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/30 focus:ring-emerald-500"
+                                : "bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200 dark:border-red-500/30 focus:ring-red-500"
+                            }`}
+                          >
+                            <option value="active" className="font-semibold text-emerald-700 dark:text-emerald-400 dark:bg-gray-800">Active</option>
+                            <option value="suspended" className="font-semibold text-red-700 dark:text-red-400 dark:bg-gray-800">Suspended</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex justify-end gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push(`/users/${u.id}`);
+                              }}
+                              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors"
+                              title="View Details"
+                            >
+                              <Eye className="h-4 w-4" />
+                            </button>
+                            <button
+                              onClick={(e) => handleDeleteClick(e, u)}
+                              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
+                              title="Delete User"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
@@ -262,6 +364,29 @@ export default function UsersPage() {
           </div>
         </div>
       </div>
+
+      <DeleteConfirmationModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={confirmDelete}
+        isDeleting={isDeleting}
+        title="Delete User"
+        description={`Are you sure you want to soft delete the user "${itemToDelete?.full_name || 'Unregistered'}"? All related data (wallet, worker profile, contractor profile) will also be soft-deleted.`}
+      />
+
+      <StatusConfirmationModal
+        isOpen={statusModalOpen}
+        onClose={() => setStatusModalOpen(false)}
+        onConfirm={confirmStatusChange}
+        isProcessing={isChangingStatus}
+        actionType={pendingStatus}
+        title={pendingStatus === "suspend" ? "Suspend Account" : "Activate Account"}
+        description={
+          pendingStatus === "suspend" 
+            ? "Are you sure you want to suspend this customer's account? They will lose access to the platform until reactivated."
+            : "Are you sure you want to reactivate this customer's account? They will regain access to the platform."
+        }
+      />
     </div>
   );
 }
