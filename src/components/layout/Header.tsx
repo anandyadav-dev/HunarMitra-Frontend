@@ -2,7 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, Bell, Search, ShieldCheck, Sun, Moon } from "lucide-react";
+import { Menu, Search, ShieldCheck, Sun, Moon } from "lucide-react";
+import NotificationDropdown from "./NotificationDropdown";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -99,16 +100,10 @@ export default function Header({ onMenuClick }: HeaderProps) {
           {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
         </button>
 
-        {/* Notifications Icon */}
-        <button
-          type="button"
-          className="relative p-1.5 text-gray-400 hover:text-gray-900 rounded-lg hover:bg-gray-100 transition-colors"
-        >
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-orange-600 ring-2 ring-white" />
-          <Bell className="h-5 w-5" />
-        </button>
+        {/* Notifications Dropdown */}
+        <NotificationDropdown />
 
-        <div className="h-6 w-px bg-gray-200 hidden sm:block" />
+        <div className="h-6 w-px bg-gray-200 dark:bg-gray-700 hidden sm:block" />
 
         {/* Profile Card */}
         <div className="hidden sm:flex items-center gap-2.5">

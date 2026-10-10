@@ -20,6 +20,7 @@ import {
   Menu,
   Shield,
   Trash2,
+  Bell,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -46,6 +47,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     { name: "Workers", href: "/workers", icon: HardHat },
     { name: "Contractors", href: "/contractors", icon: Building2 },
     { name: "Categories", href: "/services", icon: Layers },
+    { name: "Notifications", href: "/notifications", icon: Bell },
     { name: "Recycle Bin", href: "/trash", icon: Trash2 },
     { name: "Settings", href: "/settings", icon: Settings },
   ];

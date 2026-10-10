@@ -265,5 +265,13 @@ export const api = {
         method: "POST",
         body: JSON.stringify({ amount, type, description }),
       }),
+
+    // Notifications
+    getNotifications: (skip = 0, limit = 50) =>
+      apiFetch<any[]>(`/notifications?skip=${skip}&limit=${limit}`),
+    markNotificationRead: (id: string) =>
+      apiFetch<any>(`/notifications/${id}/read`, { method: "PATCH" }),
+    markAllNotificationsRead: () =>
+      apiFetch<any>(`/notifications/mark-all-read`, { method: "POST" }),
   },
 };
